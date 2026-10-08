@@ -150,7 +150,9 @@ body.chill #hud, body.chill .challenge { animation: shiver 0.5s ease-in-out 2; }
 /* ---------- Overlays / paneles ---------- */
 .overlay { position: fixed; inset: 0; z-index: 10; display: flex; padding: 16px; pointer-events: none; }
 .overlay > * { pointer-events: auto; }
-.overlay.center { align-items: center; justify-content: center; flex-direction: column; gap: 18px; overflow-y: auto; padding-top: 70px; }
+/* Centrado "seguro": si el panel es más alto que la pantalla (móvil), se puede hacer scroll hasta arriba y abajo. */
+.overlay.center { align-items: safe center; justify-content: center; flex-direction: column; gap: 18px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-top: 70px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); pointer-events: auto; }
+.overlay.center > * { flex-shrink: 0; }
 .overlay.bottom { align-items: flex-end; justify-content: center; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
 .panel {
   background: var(--glass-2); border: 1px solid var(--line); border-radius: var(--radius);
@@ -301,6 +303,10 @@ body[data-screen="turn"] .subtitle-text { font-size: clamp(1rem, 2.2vw, 1.35rem)
   .challenge { padding: 12px; }
   .timer { width: 48px; height: 48px; } .timer span { font-size: 1.2rem; }
   .overlay.center { padding-top: 60px; }
+  .board { max-height: none; }
+  .stat-tiles { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .tile strong { font-size: 1.5rem; }
+  .end .actions { position: sticky; bottom: 0; padding: 10px 0 4px; margin: 8px -16px -16px; padding-left: 16px; padding-right: 16px; background: linear-gradient(180deg, transparent, var(--glass-2) 30%); border-radius: 0 0 var(--radius) var(--radius); }
   body[data-screen="turn"] .subtitles { top: calc(140px + env(safe-area-inset-top)); }
   .chip.place { padding: 4px 10px 4px 8px; } .chip.place span { font-size: 1.1rem; }
 }
