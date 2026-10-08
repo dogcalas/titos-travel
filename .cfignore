@@ -1,0 +1,6 @@
+assets/raw/
+server/
+tools/
+data/
+node_modules/
+.git/

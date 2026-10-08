@@ -1,15 +1,21 @@
 #!/usr/bin/env node
-// Genera los fondos de cada dimensión y la narración de la intro con la API de Google AI (Gemini).
+// Genera los recursos visuales y de voz del juego con la API de Google AI (Gemini).
 // La clave se usa solo aquí, en tu máquina: el juego publicado nunca la ve.
 //
-//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs            # imágenes + narración
-//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=images
-//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=audio
+//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs                 # todo
+//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=tito     # poses de Tito
+//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=guardians
+//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=scenes
+//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=audio      # voces de guardianes
+//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=narration  # narrador (subtítulos)
 //   ... --force   (regenera aunque el archivo ya exista)
 //
-// Modelos configurables por si Google les cambia el nombre:
+// Los sprites (Tito, guardianes, cafetera) se generan sobre fondo verde en assets/raw/
+// y luego `python3 tools/chroma_key.py` los recorta a PNG transparente en assets/img/.
+//
+// Modelos configurables:
 //   GEMINI_IMAGE_MODEL (por defecto gemini-2.5-flash-image)
-//   GEMINI_TTS_MODEL   (por defecto gemini-2.5-flash-preview-tts)
+//   GEMINI_TTS_MODEL   (por defecto gemini-3.8-flash-tts)
 //   GEMINI_TTS_VOICE   (por defecto Sulafat)
 //
 // Requiere Node 18+ (fetch nativo).
@@ -23,7 +29,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
 const KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image";
-const TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-2.5-flash-preview-tts";
+const TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-3.8-flash-tts";
 const TTS_VOICE = process.env.GEMINI_TTS_VOICE || "Sulafat";
 
 const args = new Set(process.argv.slice(2));
@@ -35,22 +41,60 @@ if (!KEY) {
   process.exit(1);
 }
 
-const STYLE =
-  "Cinematic magical-realism digital painting, warm Caribbean golden light, rich saturated colors, " +
-  "subtle cold grey fog creeping in from one edge of the frame, nostalgic and dreamlike, wide 16:9 composition, " +
-  "space in the center for overlaid text, no text, no letters, no logos, no watermarks.";
+const GREEN =
+  " The background must be a completely flat, uniform, solid bright chroma-key green (#00FF00) with no shadows on it, " +
+  "no floor, no gradient, no props, no text. Nothing in the character may be green.";
 
-const IMAGES = {
-  miami: "A lonely Cuban man in his thirties wearing a white guayabera, seen from behind, standing at the window of a 14th-floor apartment in Miami at night, looking at the I-95 highway full of red and white light trails and Brickell neon towers. On the kitchen stove behind him an old aluminum moka coffee pot releases thick golden steam that swirls into a glowing portal.",
-  malecon: "The Havana Malecón seawall at sunset, ocean waves frozen mid-air like curtains of green glass with tiny glowing memories inside them, an old fisherman made of sea foam wearing a yarey straw hat sitting on the wall with a fishing rod whose line disappears into the clouds, Morro castle lighthouse in the distance.",
-  solar: "The courtyard of a colorful old Havana tenement (solar) with clotheslines crossing between balconies, laundry dancing by itself, walls peeling and repainting themselves in pink, green and canary yellow, an elderly Afro-Cuban woman in a white headscarf brewing coffee through a cloth strainer over a charcoal stove, steam glowing gold.",
-  parque: "A dreamy vintage Cuban amusement park at dusk, a rusty carousel with wooden horses, a ferris wheel with colored bulbs, pink cotton candy floating like clouds, a cute cardboard puppet boy with painted rosy cheeks and a handkerchief standing in the foreground.",
-  bodega: "Interior of an old Cuban neighborhood bodega, worn wooden counter, chalkboard price list, sacks of rice and beans, an old needle scale, women with cloth bags waiting in line, a whimsical shopkeeper with four arms and a pencil behind each ear serving everyone at once, warm afternoon light through the door.",
-  cabana: "The ramparts of La Cabaña fortress in Havana at twilight, a colonial artilleryman in a red coat and tricorn hat holding a burning fuse next to an old bronze cannon, Havana bay glowing copper below, city lights turning on, torches along the wall.",
-  almendron: "Inside a red and white 1957 Chevrolet classic car (almendrón) driving on an endless Cuban country road, view from the back seat, fluffy dashboard and steering wheel, a driver with a cap looking through the rear-view mirror, through the windows sugar cane fields, royal palms and a sunset beach blur past.",
-  carnaval: "The Santiago de Cuba carnival at night, a conga line of hundreds of dancers flowing down a street, spinning paper lanterns (farolas), sequined costumes, drums and a Chinese cornet, a playful masked diablito dancer in a striped costume with little bells on his ankles floating above the ground, confetti in the air.",
-  vinales: "The Viñales valley in Cuba at sunrise, limestone mogotes rising from red earth, tobacco fields and a thatched tobacco drying house, a guajiro farmer in a guano palm hat rocking on a taburete chair on the porch of a bohío, smoking a cigar whose smoke draws a horse, a palm tree and a dancing woman in the air.",
-  ceiba: "A colossal sacred ceiba tree at the heart of Cuba, taller than skyscrapers, roots spreading across the whole island with rivers of glowing memories flowing between them, the bark opening to reveal the serene wise face of an old grandmother, a grey silent hurricane of fog circling the tree and being pushed back by golden light."
+const PIXAR = "Stylized 3D animated-film look (Pixar-like), soft studio lighting, high detail, full body visible with margin above head and below feet, centered.";
+
+const TITO_DESC =
+  "Tito: a 35-year-old Cuban man, light brown skin, short dark curly hair, slight stubble, warm expressive eyes, " +
+  "wearing a white linen guayabera shirt with four pockets, beige pants and brown leather loafers.";
+
+// Poses de Tito. "idle" es la referencia; las demás se generan a partir de ella para mantener el personaje.
+const TITO_BASE = `Full-body character design of ${TITO_DESC} Use the attached image as the exact reference for his face, hair, body, outfit and rendering style; keep them identical. ${PIXAR}`;
+const TITO_POSES = {
+  idle: `Full-body character design of ${TITO_DESC} Standing idle, relaxed, slight smile, facing the viewer, three-quarter view. ${PIXAR}${GREEN}`,
+  happy: `${TITO_BASE} Pose: jumping with joy, both arms raised high, big open-mouth laugh, eyes squeezed shut with happiness, feet off the ground.${GREEN}`,
+  cold: `${TITO_BASE} Pose: cold and sad, hugging himself with both arms, shoulders hunched, shivering, eyes downcast, mouth in a small sad line.${GREEN}`,
+  think: `${TITO_BASE} Pose: thinking hard, one hand on his chin, eyebrows raised, looking up and to the side, slight nervous smile.${GREEN}`,
+  walk: `${TITO_BASE} Pose: seen from behind, walking away from the viewer with determination, one foot forward, right hand slightly raised as if touching a curtain of steam.${GREEN}`,
+  coffee: `${TITO_BASE} Pose: holding a tiny white Cuban coffee cup near his face with both hands, eyes closed, smiling peacefully, savoring the aroma.${GREEN}`
+};
+
+const GUARDIANS = {
+  malecon: `An old Cuban fisherman made of sea foam and turquoise water, wearing a yarey straw hat, long beard of white foam, eyes that are two sea shells, holding a fishing rod. Friendly and wise. Three-quarter view, full body. ${PIXAR}${GREEN}`,
+  solar: `Mamá Inés: an elderly Afro-Cuban grandmother with a white headscarf, white blouse and a long flowered skirt, holding a cloth coffee strainer dripping coffee into a small cup, warm knowing smile, glowing golden steam around her hands. Full body. ${PIXAR}${GREEN}`,
+  parque: `Pin Pón: a cute puppet boy made of painted cardboard, round pink painted cheeks, button eyes, neat combed hair, a little handkerchief in his pocket, shorts and suspenders, waving. Full body. ${PIXAR}${GREEN}`,
+  bodega: `Cuco: a Cuban neighborhood shopkeeper with FOUR arms, a pencil behind each ear, a white apron over a striped shirt, one hand holding a notebook, one a scale weight, one a paper bag, one scratching his head, comic frazzled expression. Full body. ${PIXAR}${GREEN}`,
+  cabana: `A colonial Spanish artilleryman from 1800s Havana in a red coat with gold trim, white trousers, black tricorn hat, big moustache, holding a burning fuse on a long stick, stern but kind face. Full body. ${PIXAR}${GREEN}`,
+  almendron: `Chicho: a relaxed Cuban taxi driver in his fifties, flat cap, sunglasses pushed up on his forehead, short-sleeve patterned shirt, gold chain, big grin with a gold tooth, holding a fuzzy-covered steering wheel. Full body. ${PIXAR}${GREEN}`,
+  carnaval: `A Cuban carnival "diablito" dancer: a figure in a colorful striped costume covering the whole body, a cone-shaped sack mask with embroidered eyes, little bells on the ankles, mid-dance pose floating slightly off the ground, festive. Full body. ${PIXAR}${GREEN}`,
+  vinales: `A Cuban guajiro farmer from Viñales: weathered tan skin, guano palm hat, white shirt with rolled sleeves, machete at the belt, boots, smoking a cigar whose smoke curls into the shape of a small horse. Serene smile. Full body. ${PIXAR}${GREEN}`,
+  ceiba: `A gentle ancient grandmother spirit whose skin and dress are made of ceiba tree bark and green leaves, roots trailing from her hem, tiny golden lights floating around her, arms open in welcome, serene face. Full body. ${PIXAR}${GREEN}`
+};
+
+const PROPS = {
+  cafetera: `An old dented aluminum Italian-style moka coffee pot (cafetera cubana), slightly scratched, with thick glowing golden steam rising from the spout and swirling upwards. Object only, slightly from above. ${PIXAR}${GREEN}`,
+  domino: `A single domino tile made of iridescent mother-of-pearl (nacre), the 6-6 double, black pips, glowing softly, floating at a slight angle. Object only. ${PIXAR}${GREEN}`
+};
+
+const SCENE_STYLE =
+  " Cinematic magical-realism digital painting, warm Caribbean golden light, rich saturated colors, " +
+  "subtle cold grey fog creeping in from one edge of the frame, nostalgic and dreamlike, wide 16:9 composition, " +
+  "no people in the foreground, no text, no letters, no logos, no watermarks.";
+
+const SCENES = {
+  miami: "View from a 14th-floor apartment window in Miami at night: the I-95 highway full of red and white light trails, Brickell neon towers, a cold blue-grey tint. In the foreground inside the dark kitchen, an old aluminum moka coffee pot on a stove releases thick golden steam that swirls into a glowing portal.",
+  malecon: "The Havana Malecón seawall at sunset, ocean waves frozen mid-air like curtains of green glass with tiny glowing memories inside them, old colorful colonial facades along the avenue, Morro castle lighthouse in the distance.",
+  solar: "The courtyard of a colorful old Havana tenement (solar) with clotheslines crossing between balconies, laundry dancing by itself, walls peeling and repainting themselves in pink, green and canary yellow, a charcoal stove with a cloth coffee strainer, steam glowing gold.",
+  parque: "A dreamy vintage Cuban amusement park at dusk, a rusty carousel with wooden horses, a ferris wheel with colored bulbs, pink cotton candy floating like clouds.",
+  bodega: "Interior of an old Cuban neighborhood bodega, worn wooden counter, chalkboard price list, sacks of rice and beans, an old needle scale, cloth bags, warm afternoon light through the door.",
+  cabana: "The ramparts of La Cabaña fortress in Havana at twilight, an old bronze cannon pointing over Havana bay glowing copper below, city lights turning on, torches along the wall.",
+  almendron: "View through the windshield from inside a red and white 1957 Chevrolet classic car driving on an endless Cuban country road, fluffy dashboard, through the windows sugar cane fields, royal palms and a sunset beach blur past.",
+  carnaval: "The Santiago de Cuba carnival at night, a street full of spinning paper lanterns (farolas), sequined costumes in motion blur, drums, confetti in the air, warm colored lights.",
+  vinales: "The Viñales valley in Cuba at sunrise, limestone mogotes rising from red earth, tobacco fields and a thatched tobacco drying house, a bohío with a rocking chair on the porch, cigar smoke drawing shapes in the air.",
+  ceiba: "A colossal sacred ceiba tree at the heart of Cuba, taller than skyscrapers, roots spreading across the whole island with rivers of glowing memories flowing between them, a grey silent hurricane of fog circling the tree and being pushed back by golden light."
 };
 
 const INTRO_NARRATION =
@@ -60,20 +104,42 @@ const INTRO_NARRATION =
   "Llevas en el bolsillo de la guayabera cinco fichas de dominó de nácar. Cuídalas. Y no vas solo: " +
   "contigo va tu Sangre Mambisa.";
 
+// Saludo de cada Guardián (una frase corta por dimensión).
+const GUARDIAN_LINES = {
+  malecon: ["un viejo pescador habanero, voz ronca y cariñosa, lento", "Mucho tiempo sin venir, muchacho. A ver si todavía te acuerdas de lo que te enseñó tu abuela."],
+  solar: ["una abuela afrocubana dulce y firme", "Ay, mijo, siéntate. Pero antes de darte la tacita, dime una cosa."],
+  parque: ["un muñeco de cartón infantil, juguetón y agudo", "¡Si no te acuerdas de esto, el parque se cierra para siempre!"],
+  bodega: ["un bodeguero habanero apurado y gritón", "¿Quién es el último? ¡Tú! Para que te despache, primero me tienes que contestar."],
+  cabana: ["un artillero colonial solemne, voz de trueno", "Si el cañonazo de las nueve no suena, La Habana se queda sin cerrar las puertas. Respóndeme, y yo disparo."],
+  almendron: ["un chofer de almendrón relajado y jodedor", "No me tires la puerta, ¿eh? Este carro camina con gasolina de recuerdos. Si no me contestas, nos quedamos botados."],
+  carnaval: ["un diablito de carnaval santiaguero, rápido, riéndose", "¡La conga no para, muchacho! Pero para que tú entres, tienes que demostrar que eres de aquí."],
+  vinales: ["un guajiro pinareño pausado y sabio", "Hay cosas que solo sabe el que se crió aquí. A ver si es verdad."],
+  ceiba: ["una abuela ancestral, muy serena, casi un susurro", "Has llegado hasta la semilla, mi niño. Aquí hay que ser cubano de pura cepa."]
+};
+
 async function exists(p) {
   try { await access(p); return true; } catch { return false; }
 }
 
-async function callGemini(model, body) {
+async function callGemini(model, body, attempt = 0) {
   const res = await fetch(`${API}/${model}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": KEY },
     body: JSON.stringify(body)
   });
-  if (!res.ok) throw new Error(`${model} → HTTP ${res.status}: ${(await res.text()).slice(0, 400)}`);
+  if (res.status === 429 || res.status >= 500) {
+    if (attempt < 3) {
+      await new Promise((r) => setTimeout(r, 4000 * (attempt + 1)));
+      return callGemini(model, body, attempt + 1);
+    }
+  }
+  if (!res.ok) throw new Error(`${model} → HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const json = await res.json();
   const part = json.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
-  if (!part) throw new Error(`${model} no devolvió datos binarios: ${JSON.stringify(json).slice(0, 400)}`);
+  if (!part) {
+    const reason = json.candidates?.[0]?.finishReason || JSON.stringify(json).slice(0, 300);
+    throw new Error(`${model} no devolvió datos binarios (${reason})`);
+  }
   return part.inlineData;
 }
 
@@ -81,7 +147,20 @@ function extFor(mime) {
   return { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" }[mime] || "png";
 }
 
-// La API de TTS devuelve PCM 16-bit mono crudo (audio/L16;rate=24000): lo envolvemos en WAV.
+async function image(prompt, aspectRatio, referencePath) {
+  const parts = [];
+  if (referencePath) {
+    const buf = await readFile(referencePath);
+    parts.push({ inlineData: { mimeType: "image/png", data: buf.toString("base64") } });
+  }
+  parts.push({ text: prompt });
+  return callGemini(IMAGE_MODEL, {
+    contents: [{ parts }],
+    generationConfig: { responseModalities: ["IMAGE"], imageConfig: { aspectRatio } }
+  });
+}
+
+// La API de TTS puede devolver PCM 16-bit mono crudo (audio/L16;rate=24000): lo envolvemos en WAV.
 function pcmToWav(pcm, sampleRate = 24000) {
   const header = Buffer.alloc(44);
   header.write("RIFF", 0);
@@ -104,34 +183,61 @@ async function loadManifest() {
   const file = path.join(ROOT, "js", "assets-manifest.js");
   const sandbox = { window: {} };
   try { vm.runInNewContext(await readFile(file, "utf8"), sandbox); } catch { /* nuevo */ }
-  return sandbox.window.ASSETS || { images: {}, audio: {} };
+  const m = sandbox.window.ASSETS || {};
+  m.images ||= {};
+  m.sprites ||= {};
+  m.audio ||= {};
+  return m;
 }
 
 async function saveManifest(manifest) {
   const file = path.join(ROOT, "js", "assets-manifest.js");
   await writeFile(
     file,
-    "// Generado por tools/generate-assets.mjs. Vacío = el juego usa los fondos y sonidos sintetizados.\n" +
+    "// Generado por tools/generate-assets.mjs + tools/chroma_key.py. Vacío = el juego usa fondos y sonidos sintetizados.\n" +
       `window.ASSETS = ${JSON.stringify(manifest, null, 2)};\n`
   );
 }
 
-async function generateImages(manifest) {
-  const dir = path.join(ROOT, "assets", "img");
+// Sprites: se guardan crudos (fondo verde) en assets/raw/<name>.png; chroma_key.py produce assets/img/<name>.png.
+async function generateSprites(manifest, group, items, aspect, referenceKey) {
+  const dir = path.join(ROOT, "assets", "raw");
   await mkdir(dir, { recursive: true });
-  for (const [key, scene] of Object.entries(IMAGES)) {
-    const existing = manifest.images[key];
-    if (!force && existing && (await exists(path.join(ROOT, existing)))) {
-      console.log(`· ${key}: ya existe (${existing})`);
+  const ref = referenceKey ? path.join(dir, `${referenceKey}.png`) : null;
+  for (const [key, prompt] of Object.entries(items)) {
+    const name = group === "tito" ? `tito_${key}` : group === "guardians" ? `guardian_${key}` : key;
+    const raw = path.join(dir, `${name}.png`);
+    if (!force && (await exists(raw))) {
+      console.log(`· ${name}: ya existe`);
       continue;
     }
-    process.stdout.write(`🎨 ${key}… `);
+    process.stdout.write(`🎭 ${name}… `);
     try {
-      const data = await callGemini(IMAGE_MODEL, {
-        contents: [{ parts: [{ text: `${scene} ${STYLE}` }] }],
-        generationConfig: { responseModalities: ["IMAGE"], imageConfig: { aspectRatio: "16:9" } }
-      });
-      const rel = `assets/img/${key}.${extFor(data.mimeType)}`;
+      const useRef = ref && key !== referenceKey && (await exists(ref)) ? ref : null;
+      const data = await image(prompt, aspect, useRef);
+      await writeFile(raw, Buffer.from(data.data, "base64"));
+      manifest.sprites[name] = `assets/img/${name}.png`;
+      await saveManifest(manifest);
+      console.log(`ok${useRef ? " (con referencia)" : ""}`);
+    } catch (e) {
+      console.log(`falló\n   ${e.message}`);
+    }
+  }
+}
+
+async function generateScenes(manifest) {
+  const dir = path.join(ROOT, "assets", "img");
+  await mkdir(dir, { recursive: true });
+  for (const [key, scene] of Object.entries(SCENES)) {
+    const existing = manifest.images[key];
+    if (!force && existing && (await exists(path.join(ROOT, existing)))) {
+      console.log(`· escena ${key}: ya existe`);
+      continue;
+    }
+    process.stdout.write(`🎨 escena ${key}… `);
+    try {
+      const data = await image(scene + SCENE_STYLE, "16:9");
+      const rel = `assets/img/scene_${key}.${extFor(data.mimeType)}`;
       await writeFile(path.join(ROOT, rel), Buffer.from(data.data, "base64"));
       manifest.images[key] = rel;
       await saveManifest(manifest);
@@ -142,38 +248,89 @@ async function generateImages(manifest) {
   }
 }
 
+async function tts(text) {
+  const data = await callGemini(TTS_MODEL, {
+    contents: [{ parts: [{ text }] }],
+    generationConfig: {
+      responseModalities: ["AUDIO"],
+      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } } }
+    }
+  });
+  const rate = Number(/rate=(\d+)/.exec(data.mimeType || "")?.[1] || 24000);
+  const pcm = Buffer.from(data.data, "base64");
+  return /wav/.test(data.mimeType) ? pcm : pcmToWav(pcm, rate);
+}
+
+// Narración completa de la historia (una pista por párrafo) para los subtítulos sincronizados.
+const NARRATOR_STYLE = "Narra en español cubano, como un narrador de cine cálido y nostálgico, voz grave, ritmo pausado pero con emoción: ";
+async function narrationJobs() {
+  const sandbox = { window: {} };
+  vm.runInNewContext(await readFile(path.join(ROOT, "js", "narrative.js"), "utf8"), sandbox);
+  const N = sandbox.window.NARRATIVE;
+  const strip = (html) => html.replace(/<[^>]+>/g, "");
+  const jobs = [];
+  N.intro.paragraphs.forEach((t, i) => jobs.push([`n_intro_${i}`, strip(t)]));
+  for (const d of N.dimensions) {
+    d.arrive.forEach((t, i) => jobs.push([`n_${d.key}_arrive_${i}`, strip(t)]));
+    d.again.forEach((t, i) => jobs.push([`n_${d.key}_again_${i}`, strip(t)]));
+  }
+  N.victory.paragraphs.forEach((t, i) => jobs.push([`n_victory_${i}`, strip(t)]));
+  N.defeat.paragraphs.forEach((t, i) => jobs.push([`n_defeat_${i}`, strip(t)]));
+  return jobs.map(([k, t]) => [k, NARRATOR_STYLE + t]);
+}
+
+async function generateNarration(manifest) {
+  const dir = path.join(ROOT, "assets", "audio");
+  await mkdir(dir, { recursive: true });
+  for (const [name, text] of await narrationJobs()) {
+    const rel = `assets/audio/${name}.wav`;
+    if (!force && manifest.audio[name] && (await exists(path.join(ROOT, manifest.audio[name])))) {
+      console.log(`· ${name}: ya existe`);
+      continue;
+    }
+    process.stdout.write(`🎙️  ${name}… `);
+    try {
+      await writeFile(path.join(ROOT, rel), await tts(text));
+      manifest.audio[name] = rel;
+      await saveManifest(manifest);
+      console.log("ok");
+    } catch (e) {
+      console.log(`falló\n   ${e.message}`);
+    }
+  }
+}
+
 async function generateAudio(manifest) {
   const dir = path.join(ROOT, "assets", "audio");
   await mkdir(dir, { recursive: true });
-  const rel = "assets/audio/intro.wav";
-  if (!force && manifest.audio.intro && (await exists(path.join(ROOT, rel)))) {
-    console.log(`· intro: ya existe (${rel})`);
-    return;
+  const jobs = [["intro", INTRO_NARRATION]];
+  for (const [key, [style, line]] of Object.entries(GUARDIAN_LINES)) {
+    jobs.push([`guardian_${key}`, `Lee esto en español cubano, como ${style}: ${line}`]);
   }
-  process.stdout.write("🗣️  narración de la cafetera… ");
-  try {
-    const data = await callGemini(TTS_MODEL, {
-      contents: [{ parts: [{ text: INTRO_NARRATION }] }],
-      generationConfig: {
-        responseModalities: ["AUDIO"],
-        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } } }
-      }
-    });
-    const rate = Number(/rate=(\d+)/.exec(data.mimeType || "")?.[1] || 24000);
-    const pcm = Buffer.from(data.data, "base64");
-    const buf = /wav/.test(data.mimeType) ? pcm : pcmToWav(pcm, rate);
-    await writeFile(path.join(ROOT, rel), buf);
-    manifest.audio.intro = rel;
-    await saveManifest(manifest);
-    console.log(`ok → ${rel}`);
-  } catch (e) {
-    console.log(`falló\n   ${e.message}`);
+  for (const [name, text] of jobs) {
+    const rel = `assets/audio/${name}.wav`;
+    if (!force && manifest.audio[name] && (await exists(path.join(ROOT, manifest.audio[name])))) {
+      console.log(`· ${name}: ya existe`);
+      continue;
+    }
+    process.stdout.write(`🗣️  ${name}… `);
+    try {
+      await writeFile(path.join(ROOT, rel), await tts(text));
+      manifest.audio[name] = rel;
+      await saveManifest(manifest);
+      console.log(`ok → ${rel}`);
+    } catch (e) {
+      console.log(`falló\n   ${e.message}`);
+    }
   }
 }
 
 const manifest = await loadManifest();
-manifest.images ||= {};
-manifest.audio ||= {};
-if (!only || only === "images") await generateImages(manifest);
-if (!only || only === "audio") await generateAudio(manifest);
-console.log("Listo. Recarga index.html para ver los recursos nuevos.");
+const want = (g) => !only || only === g;
+if (want("tito")) await generateSprites(manifest, "tito", TITO_POSES, "3:4", "idle");
+if (want("guardians")) await generateSprites(manifest, "guardians", GUARDIANS, "3:4");
+if (want("props")) await generateSprites(manifest, "props", PROPS, "1:1");
+if (want("scenes")) await generateScenes(manifest);
+if (want("audio")) await generateAudio(manifest);
+if (want("narration")) await generateNarration(manifest);
+console.log("Listo. Ejecuta `python3 tools/chroma_key.py` para recortar los sprites y recarga index.html.");

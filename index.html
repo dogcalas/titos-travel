@@ -2,85 +2,153 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>El Viaje de Tito: El Retorno a la Semilla</title>
   <meta name="description" content="Trivia inmersiva de cultura popular cubana: ayuda a Tito a recuperar sus recuerdos antes de que la Neblina del Norte se los borre.">
-  <meta name="theme-color" content="#0d1b2a">
+  <meta name="theme-color" content="#0b1020">
+  <meta property="og:title" content="El Viaje de Tito: El Retorno a la Semilla">
+  <meta property="og:description" content="¿Cuánto cubano te queda? Guía a Tito por las dimensiones de la memoria y sube al scoreboard.">
+  <meta property="og:image" content="assets/img/scene_malecon.jpg">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-dim="miami">
+<body data-dim="miami" data-screen="title">
+  <canvas id="gl" aria-hidden="true"></canvas>
   <div id="scene-bg" aria-hidden="true"></div>
-  <div id="fog" aria-hidden="true"><div class="fog-layer a"></div><div class="fog-layer b"></div></div>
   <div id="flash" aria-hidden="true"></div>
   <div id="particles" aria-hidden="true"></div>
+  <div class="letterbox top" aria-hidden="true"></div>
+  <div class="letterbox bottom" aria-hidden="true"></div>
 
-  <header class="topbar">
-    <div class="brand">☕ El Viaje de Tito</div>
-    <div class="topbar-right">
+  <!-- HUD -->
+  <header id="hud" class="hud" hidden>
+    <div class="hud-left">
+      <div class="chip place"><span id="hud-place-emoji">🌊</span><div><small id="hud-level">Nivel 1 · Recuerdo Borroso</small><strong id="hud-place">El Malecón Místico</strong></div></div>
+    </div>
+    <div class="hud-center">
+      <div class="score-box"><small>Puntos</small><strong id="score">0</strong><span id="streak" class="streak" hidden>🔥 <b>0</b></span></div>
+      <div class="progress" aria-label="Progreso"><div id="progress-fill"></div></div>
+    </div>
+    <div class="hud-right">
       <div id="dominoes" class="dominoes" aria-label="Fichas de dominó"></div>
-      <button id="mute" class="icon-btn" type="button" aria-label="Silenciar sonido">🔊</button>
     </div>
   </header>
+  <div class="sys-buttons">
+    <button id="music" class="icon-btn" type="button" aria-label="Silenciar música">🎶</button>
+    <button id="mute" class="icon-btn" type="button" aria-label="Silenciar efectos y voces">🔊</button>
+  </div>
 
-  <main id="app">
-    <!-- INTRO -->
-    <section id="screen-intro" class="card screen">
+  <!-- PANTALLA DE TÍTULO -->
+  <section id="screen-title" class="overlay center">
+    <div class="title-block">
+      <img class="cafetera" id="cafetera" alt="" hidden>
       <p class="kicker">Un juego de trivia y realismo mágico cubano</p>
-      <h1 class="title">El Viaje de Tito</h1>
-      <p class="subtitle">El Retorno a la Semilla</p>
-      <div class="intro-text" id="intro-text"></div>
-      <div class="actions">
-        <button id="btn-narrate" class="btn ghost" type="button" hidden>🔊 Escuchar a la cafetera</button>
-        <button id="btn-start" class="btn primary" type="button">☕ Cruzar el vapor</button>
+      <h1 class="game-title">El Viaje<br>de Tito</h1>
+      <p class="game-sub">El Retorno a la Semilla</p>
+    </div>
+    <form id="player-form" class="panel player-panel" autocomplete="off" novalidate>
+      <label for="player-name">¿Cómo te llaman en el barrio?</label>
+      <div class="name-row">
+        <input id="player-name" name="name" type="text" maxlength="20" minlength="2" required placeholder="Tu nombre de jugador" spellcheck="false">
+        <span id="name-status" class="name-status" aria-live="polite"></span>
       </div>
-      <p class="hint">Tú eres su <strong>Sangre Mambisa</strong>: su intuición. Responde con las teclas 1–4 o tocando la opción.</p>
-    </section>
+      <p id="name-error" class="name-error" role="alert" hidden></p>
+      <button id="btn-start" class="btn big" type="submit">☕ Cruzar el vapor</button>
+      <div class="row-links">
+        <button id="btn-board" class="link" type="button">🏆 Scoreboard</button>
+        <button id="btn-how" class="link" type="button">❔ Cómo se juega</button>
+      </div>
+    </form>
+  </section>
 
-    <!-- TURNO -->
-    <section id="screen-turn" class="card screen" hidden>
-      <p class="row-label">📍 <span>Dimensión de la Memoria:</span> <strong id="place"></strong></p>
-      <p class="level"><span id="level-badge" class="badge"></span> <span id="progress" class="progress-text"></span></p>
-      <div class="progress-bar" aria-hidden="true"><div id="progress-fill"></div></div>
+  <!-- CÓMO SE JUEGA -->
+  <section id="screen-how" class="overlay center" hidden>
+    <div class="panel how">
+      <h2>Cómo se juega</h2>
+      <ul>
+        <li>🌀 Tito cruza <strong>9 dimensiones</strong> de su memoria. En cada una, un Guardián le hace <strong>2 preguntas</strong>.</li>
+        <li>🁫 Tienes <strong>5 fichas de dominó</strong>. Cada fallo (o quedarte sin tiempo) rompe una.</li>
+        <li>⏱️ <strong>25 segundos</strong> por pregunta. Más rápido = más puntos. Encadena aciertos para subir la racha.</li>
+        <li>⌨️ Responde con <strong>1–4</strong> o tocando. Toca los subtítulos para avanzar, o pulsa <em>Saltar</em>.</li>
+      </ul>
+      <button class="btn" type="button" data-back>← Volver</button>
+    </div>
+  </section>
 
-      <h2 class="section-h">🎬 El Viaje de Tito</h2>
-      <div id="story" class="story"></div>
-
-      <h2 class="section-h">🧩 El Reto del Guardián</h2>
-      <p id="guardian" class="guardian"></p>
-      <p id="question" class="question"></p>
+  <!-- RETO DEL GUARDIÁN -->
+  <section id="screen-turn" class="overlay bottom" hidden>
+    <div class="panel challenge" id="challenge">
+      <div class="challenge-head">
+        <img id="guardian-avatar" class="guardian-avatar" alt="" hidden>
+        <div class="challenge-title">
+          <small id="guardian">El Guardián te desafía</small>
+          <p id="question" class="question"></p>
+        </div>
+        <div class="timer" id="timer" aria-label="Tiempo restante">
+          <svg viewBox="0 0 44 44" aria-hidden="true"><circle class="track" cx="22" cy="22" r="19"/><circle class="fill" id="timer-fill" cx="22" cy="22" r="19"/></svg>
+          <span id="timer-text">25</span>
+        </div>
+      </div>
       <div id="options" class="options" role="group" aria-label="Opciones de respuesta"></div>
       <p id="credit" class="credit" hidden></p>
-
-      <div id="outcome" class="outcome" aria-live="polite" hidden></div>
-      <div class="actions">
-        <button id="btn-next" class="btn primary" type="button" hidden>🌀 Cruzar el siguiente portal</button>
+      <div id="continue-bar" class="continue-bar" hidden>
+        <button id="btn-next" class="btn big" type="button">Continuar ▸</button>
       </div>
+    </div>
+  </section>
 
-      <p class="inventory-line">🎒 <strong>Inventario:</strong> Fichas de Dominó: <span id="inv-lives">5/5</span> | Recuerdos Recuperados: <span id="inv-memories">0</span></p>
-    </section>
-
-    <!-- FINAL -->
-    <section id="screen-end" class="card screen" hidden>
-      <h1 id="end-title" class="title small"></h1>
-      <div id="end-text" class="intro-text"></div>
-      <p id="end-stats" class="end-stats"></p>
+  <!-- FINAL -->
+  <section id="screen-end" class="overlay center" hidden>
+    <div class="panel end">
+      <h2 id="end-title" class="end-title"></h2>
+      <div class="stat-tiles" id="end-stats"></div>
+      <p id="end-rank" class="end-rank" hidden></p>
+      <h3>🏆 Scoreboard</h3>
+      <div id="end-board" class="board"></div>
       <div class="actions">
         <button id="btn-share" class="btn ghost" type="button">📋 Copiar resultado</button>
-        <button id="btn-restart" class="btn primary" type="button">☕ Volver a colar café</button>
+        <button id="btn-restart" class="btn big" type="button">☕ Volver a colar café</button>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <footer class="credits">Preguntas: base del Cubanómetro · Hecho con nostalgia y café 🇨🇺</footer>
+  <!-- SCOREBOARD -->
+  <section id="screen-board" class="overlay center" hidden>
+    <div class="panel end">
+      <h2 class="end-title">🏆 Scoreboard</h2>
+      <p id="board-mode" class="muted"></p>
+      <div id="board" class="board"></div>
+      <div class="actions"><button class="btn big" type="button" data-back>← Volver</button></div>
+    </div>
+  </section>
 
+  <!-- SUBTÍTULOS -->
+  <div id="subtitles" class="subtitles" hidden>
+    <div class="subtitle-inner">
+      <small id="subtitle-speaker" class="subtitle-speaker"></small>
+      <p id="subtitle-text" class="subtitle-text"></p>
+      <div class="subtitle-foot">
+        <div id="subtitle-dots" class="subtitle-dots"></div>
+        <span id="subtitle-tap" class="subtitle-tap">toca para avanzar</span>
+        <button id="subtitle-skip" class="skip" type="button">Saltar ▸▸</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="float-layer" aria-hidden="true"></div>
+
+  <script src="vendor/three.min.js"></script>
   <script src="js/questions.js"></script>
   <script src="js/narrative.js"></script>
   <script src="js/assets-manifest.js"></script>
   <script src="js/audio.js"></script>
+  <script src="js/music.js"></script>
+  <script src="js/scene3d.js"></script>
+  <script src="js/subtitles.js"></script>
+  <script src="js/scoreboard.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

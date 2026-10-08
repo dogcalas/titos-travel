@@ -176,6 +176,18 @@ window.SoundBoard = (function () {
     n.start(t);
   }
 
+  // Tic del temporizador en los últimos segundos.
+  function playTick() {
+    if (!ensure() || muted) return;
+    const t = ctx.currentTime + 0.01;
+    const o = ctx.createOscillator();
+    o.type = "square";
+    o.frequency.value = 1200;
+    o.connect(envGain(t, 0.001, 0.08, 0.04));
+    o.start(t);
+    o.stop(t + 0.06);
+  }
+
   function playCrack() {
     if (!ensure() || muted) return;
     const t = ctx.currentTime + 0.02;
@@ -232,6 +244,7 @@ window.SoundBoard = (function () {
     playFailure,
     playCannon,
     playCrack,
+    playTick,
     setMuted,
     isMuted: () => muted
   };

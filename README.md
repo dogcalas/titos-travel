@@ -5,49 +5,96 @@ siente que la **Neblina del Norte** le borra los recuerdos de la isla. Una vieja
 de vapor dorado y tú, su **Sangre Mambisa**, lo guías por nueve dimensiones de la memoria respondiendo
 los retos de los Guardianes.
 
-## Jugar
+- **Escena 3D** (Three.js): fondos ilustrados con parallax, portal de vapor con shaders, Neblina volumétrica,
+  partículas, fichas de dominó que brillan o se hacen añicos, Tito y los Guardianes como sprites.
+- **Narración con voz y subtítulos** cinematográficos (letterbox, "toca para avanzar", *Saltar*).
+- **HUD de juego**: puntos, racha, fichas, progreso, temporizador de 25 s por pregunta.
+- **Música**: beat de reparto (reguetón cubano) sintetizado con Web Audio, con tempo y tono por dimensión;
+  se enfría cuando la Neblina gana terreno. Puedes sustituirlo por tu propio tema (ver abajo).
+- **Scoreboard con nombres únicos**: cada jugador reclama un nombre (sin distinguir mayúsculas ni acentos) y
+  recibe un token; su mejor marca queda en el ranking.
+- 1000 preguntas del Cubanómetro, complejidad 1–9 → de *Recuerdo Borroso* a *Cubano de Pura Cepa*.
 
-Es HTML/CSS/JS puro, sin build ni dependencias. Abre `index.html` en el navegador o sírvelo con cualquier
-servidor estático (GitHub Pages, Netlify, `python3 -m http.server`).
+## Jugar en local
 
-- **18 recuerdos** en 9 dimensiones (2 preguntas por dimensión), del nivel *Recuerdo Borroso* al *Cubano de Pura Cepa*.
-- **5 fichas de dominó de nácar** como vidas: brillan al acertar, se vuelven polvo de asfalto al fallar.
-- La neblina y el color del fondo responden a las fichas que quedan; el sonido (clave, tumbadoras, mar,
-  cañonazo, tráfico) se sintetiza con Web Audio y no necesita archivos.
-- Teclas `1`–`4` para responder, `Enter` para continuar. Las preguntas ya vistas no se repiten hasta agotar el nivel.
+Sin dependencias ni build:
+
+```bash
+node server/index.js          # http://localhost:8080 (sirve el juego + scoreboard compartido en server/data/)
+```
+
+También puedes abrir `index.html` directo o con cualquier servidor estático: el scoreboard pasa a modo local
+(por dispositivo) automáticamente.
+
+## Desplegar en Cloudflare (Pages + Functions + KV)
+
+El repo ya trae el scoreboard como **Pages Functions** (`functions/api/*`) sobre un **KV namespace**.
+
+1. **Crea el proyecto** en el dashboard: *Workers & Pages → Create → Pages → Connect to Git* → elige este repo.
+   - Framework preset: *None*. Build command: *(vacío)*. Build output directory: `/` (la raíz).
+2. **Crea el KV namespace**: *Storage & Databases → KV → Create namespace* → nombre `titos-scores`.
+3. **Enlázalo al proyecto**: *Pages → tu proyecto → Settings → Bindings → Add → KV namespace*:
+   - Variable name: `SCORES` · KV namespace: `titos-scores`. Guarda y vuelve a desplegar (*Deployments → Retry*).
+4. Listo: `https://<proyecto>.pages.dev`. Comprueba `https://<proyecto>.pages.dev/api/health` → `{"ok":true}`.
+
+Con la CLI en vez del dashboard:
+
+```bash
+npm i -g wrangler && wrangler login
+wrangler kv namespace create titos-scores          # copia el id en wrangler.toml → [[kv_namespaces]] id
+wrangler pages project create titos-travel --production-branch main
+wrangler pages deploy . --project-name titos-travel
+```
+
+Cada push a la rama de producción redespliega. Para un dominio propio: *Pages → Custom domains*.
 
 ## Base de preguntas
 
-`data/cubanometro_preguntas.csv` (1000 preguntas, complejidad 1–9). Tras editar el CSV, regenera el JS:
+`data/cubanometro_preguntas.csv` (1000 preguntas, complejidad 1–9). Tras editar el CSV:
 
 ```bash
 python3 tools/csv_to_js.py   # → js/questions.js
 ```
 
-## Recursos con Google AI (opcional)
+## Regenerar arte y voces (Google AI / Gemini)
 
-`tools/generate-assets.mjs` genera un fondo ilustrado por dimensión (Gemini imagen) y la narración de la
-cafetera en la intro (Gemini TTS). Se ejecuta en tu máquina: la clave nunca llega al navegador.
+Todo el arte (fondos, Tito en 6 poses, 9 Guardianes, cafetera, dominó) y las voces (narrador, Guardianes)
+se generaron con la API de Gemini. Los scripts corren en tu máquina; la clave nunca llega al navegador.
 
 ```bash
-GEMINI_API_KEY=... node tools/generate-assets.mjs            # imágenes + audio
-GEMINI_API_KEY=... node tools/generate-assets.mjs --only=images
-GEMINI_API_KEY=... node tools/generate-assets.mjs --force     # regenerar todo
+export GEMINI_API_KEY=...
+node tools/generate-assets.mjs                 # todo lo que falte (usa --force para regenerar)
+node tools/generate-assets.mjs --only=tito     # tito | guardians | props | scenes | audio | narration
+python3 tools/chroma_key.py                    # recorta los sprites de assets/raw/ → assets/img/ (Pillow)
+python3 tools/optimize_images.py               # escenas → JPG, sprites a 800 px
+python3 tools/wav_to_mp3.py                    # voces WAV → MP3 (pip install lameenc)
 ```
 
-Escribe en `assets/` y actualiza `js/assets-manifest.js`; el juego los usa automáticamente y, si no existen,
-cae en los fondos degradados. Modelos y voz configurables con `GEMINI_IMAGE_MODEL`, `GEMINI_TTS_MODEL` y `GEMINI_TTS_VOICE`.
+Modelos por defecto: `gemini-2.5-flash-image` y `gemini-3.8-flash-tts` (configurables con
+`GEMINI_IMAGE_MODEL`, `GEMINI_TTS_MODEL`, `GEMINI_TTS_VOICE`). La generación de imágenes requiere
+facturación activa en Google AI Studio.
+
+### Música propia
+
+Pon un MP3 en `assets/audio/reparto.mp3` y añade en `js/assets-manifest.js` → `"audio": { "music": "assets/audio/reparto.mp3" }`.
+El juego lo reproduce en bucle en lugar del beat sintetizado (usa solo música con derechos).
 
 ## Estructura
 
 ```
-index.html            página única
-css/style.css         estilos, neblina, fichas, animaciones
-js/game.js            motor del juego
-js/narrative.js       dimensiones, guardianes y textos cinemáticos
-js/audio.js           sonidos sintetizados (Web Audio)
-js/questions.js       preguntas generadas desde el CSV
-js/assets-manifest.js rutas de imágenes/audio generados
-tools/                csv_to_js.py, generate-assets.mjs
-data/                 CSV original
+index.html              pantalla única (título, HUD, reto, subtítulos, final, scoreboard)
+css/style.css           interfaz de juego
+js/game.js              flujo, puntuación, temporizador, nombre único
+js/scene3d.js           escena Three.js
+js/subtitles.js         narración con subtítulos sincronizados
+js/music.js             beat de reparto (Web Audio)
+js/audio.js             efectos (clave, mar, cañonazo, tráfico…)
+js/scoreboard.js        cliente del scoreboard (API o local)
+js/narrative.js         historia, dimensiones, guardianes
+js/questions.js         preguntas (generado)
+js/assets-manifest.js   rutas de arte y voces (generado)
+functions/              scoreboard para Cloudflare Pages Functions + KV
+server/index.js         servidor Node equivalente para local/VPS
+tools/                  generación de recursos
+vendor/three.min.js     Three.js 0.158
 ```

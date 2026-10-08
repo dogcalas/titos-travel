@@ -1,0 +1,9 @@
+# Cloudflare Pages: `npx wrangler pages deploy . --project-name titos-travel`
+# El scoreboard usa Pages Functions (carpeta functions/) con un KV namespace enlazado como SCORES.
+name = "titos-travel"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "SCORES"
+id = "REEMPLAZA_CON_EL_ID_DE_TU_KV"
