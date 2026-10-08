@@ -73,10 +73,10 @@ window.NARRATIVE = {
       ],
 
       again: [
-        "¡La noria se paró! Y ese altavoz que habla en inglés es de la Neblina, no le hagas caso. Contéstame esta otra y la noria vuelve a girar."
+        "¡La estrella se paró! Y ese altavoz que habla en inglés es de la Neblina, no le hagas caso. Contéstame esta otra y la estrella vuelve a girar."
       ],
 
-      win: "la noria arranca de nuevo con un estruendo de bombillos de colores, los caballitos relinchan de verdad y una lluvia de algodón de azúcar color mamey cae sobre los niños que vuelven a correr gritando",
+      win: "la estrella arranca de nuevo con un estruendo de bombillos de colores, los caballitos relinchan de verdad y una lluvia de algodón de azúcar color mamey cae sobre los niños que vuelven a correr gritando",
       lose: "Pin Pón se empapa como cartón bajo la lluvia, los caballitos se vuelven de plástico gris y del altavoz sale, en loop, la musiquita de espera de una línea de servicio al cliente"
     },
     {

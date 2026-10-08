@@ -24,7 +24,6 @@ window.ASSETS = {
     "n_solar_arrive_0": "assets/audio/n_solar_arrive_0.mp3",
     "n_solar_again_0": "assets/audio/n_solar_again_0.mp3",
     "n_parque_arrive_0": "assets/audio/n_parque_arrive_0.mp3",
-    "n_parque_again_0": "assets/audio/n_parque_again_0.mp3",
     "n_bodega_arrive_0": "assets/audio/n_bodega_arrive_0.mp3",
     "n_bodega_again_0": "assets/audio/n_bodega_again_0.mp3",
     "n_cabana_arrive_0": "assets/audio/n_cabana_arrive_0.mp3",
@@ -36,7 +35,8 @@ window.ASSETS = {
     "n_vinales_arrive_0": "assets/audio/n_vinales_arrive_0.mp3",
     "n_vinales_again_0": "assets/audio/n_vinales_again_0.mp3",
     "n_ceiba_arrive_0": "assets/audio/n_ceiba_arrive_0.mp3",
-    "n_ceiba_again_0": "assets/audio/n_ceiba_again_0.mp3"
+    "n_ceiba_again_0": "assets/audio/n_ceiba_again_0.mp3",
+    "n_parque_again_0": "assets/audio/n_parque_again_0.mp3"
   },
   "sprites": {
     "tito_happy": "assets/img/tito_happy.png",
