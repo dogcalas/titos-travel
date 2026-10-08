@@ -214,8 +214,10 @@
     show(null);
     GL.setTitoPose("idle");
     const keys = N.intro.paragraphs.map((_, i) => `n_intro_${i}`);
-    SUB.play(N.intro.paragraphs, keys, () => { GL.openPortal(true); GL.setTitoPose("walk"); setTimeout(nextTurn, 900); });
-    setTimeout(() => GL.openPortal(true), 14000);
+    SUB.play(N.intro.paragraphs, keys, () => { GL.openPortal(true); GL.setTitoPose("walk"); setTimeout(nextTurn, 900); }, {
+      // Párrafo 2: la cafetera repica como una clave y se abre el portal.
+      onParagraph: (i) => { if (i === 1) { SFX.playClave(); setTimeout(() => SFX.playClave(), 1800); setTimeout(() => GL.openPortal(true), 2500); } }
+    });
   }
 
   function nextTurn() {

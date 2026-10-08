@@ -9,8 +9,9 @@ los retos de los Guardianes.
   partículas, fichas de dominó que brillan o se hacen añicos, Tito y los Guardianes como sprites.
 - **Narración con voz y subtítulos** cinematográficos (letterbox, "toca para avanzar", *Saltar*).
 - **HUD de juego**: puntos, racha, fichas, progreso, temporizador de 25 s por pregunta.
-- **Música**: beat de reparto (reguetón cubano) sintetizado con Web Audio, con tempo y tono por dimensión;
-  se enfría cuando la Neblina gana terreno. Puedes sustituirlo por tu propio tema (ver abajo).
+- **Música**: tema de reparto (reguetón cubano) instrumental generado con **Lyria**, en bucle, que pasa por una
+  cadena de Web Audio y se "enfría" (filtro) cuando la Neblina gana terreno. Sin la pista, suena un beat de
+  reparto sintetizado con tempo y tono por dimensión.
 - **Scoreboard con nombres únicos**: cada jugador reclama un nombre (sin distinguir mayúsculas ni acentos) y
   recibe un token; su mejor marca queda en el ranking.
 - 1000 preguntas del Cubanómetro, complejidad 1–9 → de *Recuerdo Borroso* a *Cubano de Pura Cepa*.
@@ -68,20 +69,23 @@ se generaron con la API de Gemini. Los scripts corren en tu máquina; la clave n
 ```bash
 export GEMINI_API_KEY=...
 node tools/generate-assets.mjs                 # todo lo que falte (usa --force para regenerar)
-node tools/generate-assets.mjs --only=tito     # tito | guardians | props | scenes | audio | narration
+node tools/generate-assets.mjs --only=tito     # tito | guardians | props | scenes | audio | narration | music
 python3 tools/chroma_key.py                    # recorta los sprites de assets/raw/ → assets/img/ (Pillow)
 python3 tools/optimize_images.py               # escenas → JPG, sprites a 800 px
 python3 tools/wav_to_mp3.py                    # voces WAV → MP3 (pip install lameenc)
 ```
 
-Modelos por defecto: `gemini-2.5-flash-image` y `gemini-3.8-flash-tts` (configurables con
-`GEMINI_IMAGE_MODEL`, `GEMINI_TTS_MODEL`, `GEMINI_TTS_VOICE`). La generación de imágenes requiere
-facturación activa en Google AI Studio.
+Modelos por defecto: `gemini-2.5-flash-image`, `gemini-3.1-flash-tts-preview` y `lyria-3.5` (configurables con
+`GEMINI_IMAGE_MODEL`, `GEMINI_TTS_MODEL`, `GEMINI_TTS_VOICE`, `LYRIA_MODEL`). Imágenes y música requieren
+facturación activa en Google AI Studio. Ojo: `gemini-3.8-flash-tts` lee en voz alta la instrucción de estilo;
+los modelos *preview* 2.5 y 3.1 la obedecen sin leerla.
+
+Duraciones de narración: intro < 1 min; cada llegada o regreso a una dimensión, 15–20 s (un párrafo de ~50 palabras).
 
 ### Música propia
 
-Pon un MP3 en `assets/audio/reparto.mp3` y añade en `js/assets-manifest.js` → `"audio": { "music": "assets/audio/reparto.mp3" }`.
-El juego lo reproduce en bucle en lugar del beat sintetizado (usa solo música con derechos).
+Para usar tu propio tema en lugar del de Lyria, sustituye `assets/audio/reparto.mp3` (o cambia la ruta de
+`audio.music` en `js/assets-manifest.js`). Usa solo música con derechos.
 
 ## Estructura
 

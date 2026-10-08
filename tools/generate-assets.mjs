@@ -8,6 +8,7 @@
 //   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=scenes
 //   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=audio      # voces de guardianes
 //   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=narration  # narrador (subtítulos)
+//   GEMINI_API_KEY=xxxx node tools/generate-assets.mjs --only=music      # tema de reparto (Lyria)
 //   ... --force   (regenera aunque el archivo ya exista)
 //
 // Los sprites (Tito, guardianes, cafetera) se generan sobre fondo verde en assets/raw/
@@ -15,12 +16,12 @@
 //
 // Modelos configurables:
 //   GEMINI_IMAGE_MODEL (por defecto gemini-2.5-flash-image)
-//   GEMINI_TTS_MODEL   (por defecto gemini-3.8-flash-tts)
-//   GEMINI_TTS_VOICE   (por defecto Sulafat)
+//   GEMINI_TTS_MODEL   (por defecto gemini-3.1-flash-tts-preview)
+//   GEMINI_TTS_VOICE   (por defecto Algenib, el narrador)
 //
 // Requiere Node 18+ (fetch nativo).
 
-import { mkdir, writeFile, access, readFile } from "node:fs/promises";
+import { mkdir, writeFile, access, readFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
@@ -29,8 +30,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
 const KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image";
-const TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-3.8-flash-tts";
-const TTS_VOICE = process.env.GEMINI_TTS_VOICE || "Sulafat";
+// gemini-3.8-flash-tts lee en voz alta la instrucción de estilo; 3.1-preview y 2.5-preview la obedecen sin leerla.
+const TTS_MODEL = process.env.GEMINI_TTS_MODEL || "gemini-3.1-flash-tts-preview";
+const TTS_VOICE = process.env.GEMINI_TTS_VOICE || "Algenib"; // narrador: voz masculina grave
 
 const args = new Set(process.argv.slice(2));
 const only = [...args].find((a) => a.startsWith("--only="))?.split("=")[1];
@@ -105,16 +107,17 @@ const INTRO_NARRATION =
   "contigo va tu Sangre Mambisa.";
 
 // Saludo de cada Guardián (una frase corta por dimensión).
+// [estilo, frase, voz prebuilt de Gemini]
 const GUARDIAN_LINES = {
-  malecon: ["un viejo pescador habanero, voz ronca y cariñosa, lento", "Mucho tiempo sin venir, muchacho. A ver si todavía te acuerdas de lo que te enseñó tu abuela."],
-  solar: ["una abuela afrocubana dulce y firme", "Ay, mijo, siéntate. Pero antes de darte la tacita, dime una cosa."],
-  parque: ["un muñeco de cartón infantil, juguetón y agudo", "¡Si no te acuerdas de esto, el parque se cierra para siempre!"],
-  bodega: ["un bodeguero habanero apurado y gritón", "¿Quién es el último? ¡Tú! Para que te despache, primero me tienes que contestar."],
-  cabana: ["un artillero colonial solemne, voz de trueno", "Si el cañonazo de las nueve no suena, La Habana se queda sin cerrar las puertas. Respóndeme, y yo disparo."],
-  almendron: ["un chofer de almendrón relajado y jodedor", "No me tires la puerta, ¿eh? Este carro camina con gasolina de recuerdos. Si no me contestas, nos quedamos botados."],
-  carnaval: ["un diablito de carnaval santiaguero, rápido, riéndose", "¡La conga no para, muchacho! Pero para que tú entres, tienes que demostrar que eres de aquí."],
-  vinales: ["un guajiro pinareño pausado y sabio", "Hay cosas que solo sabe el que se crió aquí. A ver si es verdad."],
-  ceiba: ["una abuela ancestral, muy serena, casi un susurro", "Has llegado hasta la semilla, mi niño. Aquí hay que ser cubano de pura cepa."]
+  malecon: ["un viejo pescador habanero, voz ronca y cariñosa, lento", "Mucho tiempo sin venir, muchacho. A ver si todavía te acuerdas de lo que te enseñó tu abuela.", "Algenib"],
+  solar: ["una abuela afrocubana dulce y firme", "Ay, mijo, siéntate. Pero antes de darte la tacita, dime una cosa.", "Gacrux"],
+  parque: ["un muñeco de cartón infantil, juguetón y agudo", "¡Si no te acuerdas de esto, el parque se cierra para siempre!", "Puck"],
+  bodega: ["un bodeguero habanero apurado y gritón", "¿Quién es el último? ¡Tú! Para que te despache, primero me tienes que contestar.", "Fenrir"],
+  cabana: ["un artillero colonial solemne, voz de trueno", "Si el cañonazo de las nueve no suena, La Habana se queda sin cerrar las puertas. Respóndeme, y yo disparo.", "Orus"],
+  almendron: ["un chofer de almendrón relajado y jodedor", "No me tires la puerta, ¿eh? Este carro camina con gasolina de recuerdos. Si no me contestas, nos quedamos botados.", "Zubenelgenubi"],
+  carnaval: ["un diablito de carnaval santiaguero, rápido, riéndose", "¡La conga no para, muchacho! Pero para que tú entres, tienes que demostrar que eres de aquí.", "Sadachbia"],
+  vinales: ["un guajiro pinareño pausado y sabio", "Hay cosas que solo sabe el que se crió aquí. A ver si es verdad.", "Schedar"],
+  ceiba: ["una abuela ancestral, muy serena, casi un susurro", "Has llegado hasta la semilla, mi niño. Aquí hay que ser cubano de pura cepa.", "Vindemiatrix"]
 };
 
 async function exists(p) {
@@ -248,12 +251,12 @@ async function generateScenes(manifest) {
   }
 }
 
-async function tts(text) {
+async function tts(text, voice = TTS_VOICE) {
   const data = await callGemini(TTS_MODEL, {
     contents: [{ parts: [{ text }] }],
     generationConfig: {
       responseModalities: ["AUDIO"],
-      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } } }
+      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } }
     }
   });
   const rate = Number(/rate=(\d+)/.exec(data.mimeType || "")?.[1] || 24000);
@@ -282,7 +285,16 @@ async function narrationJobs() {
 async function generateNarration(manifest) {
   const dir = path.join(ROOT, "assets", "audio");
   await mkdir(dir, { recursive: true });
-  for (const [name, text] of await narrationJobs()) {
+  const jobs = await narrationJobs();
+  // Pistas de narración que ya no existen en narrative.js (p. ej. tras acortar la intro).
+  const valid = new Set(jobs.map(([k]) => k));
+  for (const key of Object.keys(manifest.audio)) {
+    if (key.startsWith("n_") && !valid.has(key)) {
+      await unlink(path.join(ROOT, manifest.audio[key])).catch(() => {});
+      delete manifest.audio[key];
+    }
+  }
+  for (const [name, text] of jobs) {
     const rel = `assets/audio/${name}.wav`;
     if (!force && manifest.audio[name] && (await exists(path.join(ROOT, manifest.audio[name])))) {
       console.log(`· ${name}: ya existe`);
@@ -303,11 +315,11 @@ async function generateNarration(manifest) {
 async function generateAudio(manifest) {
   const dir = path.join(ROOT, "assets", "audio");
   await mkdir(dir, { recursive: true });
-  const jobs = [["intro", INTRO_NARRATION]];
-  for (const [key, [style, line]] of Object.entries(GUARDIAN_LINES)) {
-    jobs.push([`guardian_${key}`, `Lee esto en español cubano, como ${style}: ${line}`]);
+  const jobs = [["intro", INTRO_NARRATION, "Sulafat"]];
+  for (const [key, [style, line, voice]] of Object.entries(GUARDIAN_LINES)) {
+    jobs.push([`guardian_${key}`, `Lee esto en español cubano, como ${style}: ${line}`, voice]);
   }
-  for (const [name, text] of jobs) {
+  for (const [name, text, voice] of jobs) {
     const rel = `assets/audio/${name}.wav`;
     if (!force && manifest.audio[name] && (await exists(path.join(ROOT, manifest.audio[name])))) {
       console.log(`· ${name}: ya existe`);
@@ -315,13 +327,42 @@ async function generateAudio(manifest) {
     }
     process.stdout.write(`🗣️  ${name}… `);
     try {
-      await writeFile(path.join(ROOT, rel), await tts(text));
+      await writeFile(path.join(ROOT, rel), await tts(text, voice));
       manifest.audio[name] = rel;
       await saveManifest(manifest);
       console.log(`ok → ${rel}`);
     } catch (e) {
       console.log(`falló\n   ${e.message}`);
     }
+  }
+}
+
+// Música de fondo con Lyria: un tema de reparto instrumental en bucle.
+const MUSIC_MODEL = process.env.LYRIA_MODEL || "lyria-3.5";
+const MUSIC_PROMPT =
+  "Instrumental Cuban reparto / reggaetón cubano beat, 96 BPM, dembow drums, deep 808 bass with tumbao, " +
+  "clave 3-2 and congas, dark minor synth stabs and a nostalgic Cuban tres melody, modern Havana street sound, " +
+  "steady energy, seamless loop, no vocals, no intro, no outro.";
+
+async function generateMusic(manifest) {
+  const rel = "assets/audio/reparto.mp3";
+  if (!force && manifest.audio.music && (await exists(path.join(ROOT, manifest.audio.music)))) {
+    console.log("· música: ya existe");
+    return;
+  }
+  process.stdout.write(`🎵 reparto (${MUSIC_MODEL})… `);
+  try {
+    const data = await callGemini(MUSIC_MODEL, {
+      contents: [{ parts: [{ text: MUSIC_PROMPT }] }],
+      generationConfig: { responseModalities: ["AUDIO"] }
+    });
+    await mkdir(path.join(ROOT, "assets", "audio"), { recursive: true });
+    await writeFile(path.join(ROOT, rel), Buffer.from(data.data, "base64"));
+    manifest.audio.music = rel;
+    await saveManifest(manifest);
+    console.log(`ok → ${rel}`);
+  } catch (e) {
+    console.log(`falló\n   ${e.message}`);
   }
 }
 
@@ -333,4 +374,5 @@ if (want("props")) await generateSprites(manifest, "props", PROPS, "1:1");
 if (want("scenes")) await generateScenes(manifest);
 if (want("audio")) await generateAudio(manifest);
 if (want("narration")) await generateNarration(manifest);
+if (want("music")) await generateMusic(manifest);
 console.log("Listo. Ejecuta `python3 tools/chroma_key.py` para recortar los sprites y recarga index.html.");

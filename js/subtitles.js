@@ -87,9 +87,10 @@ window.Subtitles = (function () {
   }
 
   // paragraphs: textos (pueden llevar HTML); keys: clave de audio por párrafo (o null).
+  // opts.onParagraph(i) se llama al empezar cada párrafo (para efectos sincronizados).
   function play(paragraphs, keys, onDone, opts) {
     stop(false);
-    session = { paragraphs, keys: keys || [], onDone, cancelled: false, speaker: opts && opts.speaker };
+    session = { paragraphs, keys: keys || [], onDone, cancelled: false, speaker: opts && opts.speaker, onParagraph: opts && opts.onParagraph };
     box.hidden = false;
     box.classList.toggle("speaker", Boolean(session.speaker));
     document.getElementById("subtitle-speaker").textContent = session.speaker || "";
@@ -99,6 +100,7 @@ window.Subtitles = (function () {
   function runParagraph(pi) {
     if (!session || session.cancelled) return;
     if (pi >= session.paragraphs.length) return finish();
+    if (session.onParagraph) session.onParagraph(pi);
     const chunks = chunk(session.paragraphs[pi]);
     const totalChars = chunks.reduce((a, c) => a + c.length, 0);
     const url = clipFor(session.keys[pi]);

@@ -1,7 +1,8 @@
 // Música de fondo: un beat de reparto (reguetón cubano) sintetizado con Web Audio.
 // Dembow + bajo 808 con tumbao + clave + congas + sintes oscuros. Cambia de tono y tempo por dimensión,
 // y se "enfría" (filtro, tempo) cuando la Neblina gana terreno.
-// Si existe ASSETS.audio.music (p. ej. assets/audio/reparto.mp3), se reproduce ese archivo en bucle en su lugar.
+// Si existe ASSETS.audio.music (pista generada con Lyria o un MP3 propio), se reproduce ese archivo en bucle
+// a través de la misma cadena de efectos.
 
 window.Reparto = (function () {
   let ctx, out, lp, duck;
@@ -204,18 +205,25 @@ window.Reparto = (function () {
 
   function start(dimKey) {
     const assets = window.ASSETS && window.ASSETS.audio;
+    if (!ensure()) return;
+    if (ctx.state === "suspended") ctx.resume();
     if (assets && assets.music) {
+      // Pista real (Lyria): pasa por la misma cadena (filtro de "frío", ducking, compresor) que el beat sintetizado.
       if (!fileAudio) {
         fileAudio = new Audio(assets.music);
         fileAudio.loop = true;
-        fileAudio.volume = muted ? 0 : 0.5;
+        fileAudio.crossOrigin = "anonymous";
+        try {
+          const src = ctx.createMediaElementSource(fileAudio);
+          const g = ctx.createGain();
+          g.gain.value = 0.9;
+          src.connect(g).connect(duck);
+        } catch (e) { /* si falla, suena directo */ }
       }
       fileAudio.play().catch(() => {});
       playing = true;
       return;
     }
-    if (!ensure()) return;
-    if (ctx.state === "suspended") ctx.resume();
     if (!noiseBuf) noiseBuf = noise(0.5);
     setDimension(dimKey || "miami");
     if (playing) return;
@@ -248,11 +256,6 @@ window.Reparto = (function () {
   // Baja el volumen mientras habla un Guardián.
   function duckFor(seconds) {
     if (!(seconds > 0 && seconds < 120)) seconds = 4; // duration puede ser NaN/Infinity antes de cargar
-    if (fileAudio) {
-      fileAudio.volume = muted ? 0 : 0.15;
-      setTimeout(() => { fileAudio.volume = muted ? 0 : 0.5; }, seconds * 1000);
-      return;
-    }
     if (!ctx) return;
     const now = ctx.currentTime;
     duck.gain.cancelScheduledValues(now);
@@ -264,7 +267,6 @@ window.Reparto = (function () {
   function setMuted(v) {
     muted = v;
     try { localStorage.setItem("tito.music.muted", v ? "1" : "0"); } catch (e) { /* sin storage */ }
-    if (fileAudio) fileAudio.volume = v ? 0 : 0.5;
     if (out) out.gain.linearRampToValueAtTime(v ? 0 : 0.55, ctx.currentTime + 0.3);
   }
 
