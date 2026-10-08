@@ -14,18 +14,11 @@ window.ASSETS = {
   },
   "audio": {
     "intro": "assets/audio/intro.mp3",
-    "guardian_malecon": "assets/audio/guardian_malecon.mp3",
-    "guardian_solar": "assets/audio/guardian_solar.mp3",
-    "guardian_parque": "assets/audio/guardian_parque.mp3",
-    "guardian_bodega": "assets/audio/guardian_bodega.mp3",
-    "guardian_cabana": "assets/audio/guardian_cabana.mp3",
-    "guardian_almendron": "assets/audio/guardian_almendron.mp3",
-    "guardian_carnaval": "assets/audio/guardian_carnaval.mp3",
-    "guardian_vinales": "assets/audio/guardian_vinales.mp3",
-    "guardian_ceiba": "assets/audio/guardian_ceiba.mp3",
     "n_intro_0": "assets/audio/n_intro_0.mp3",
     "n_intro_1": "assets/audio/n_intro_1.mp3",
     "n_intro_2": "assets/audio/n_intro_2.mp3",
+    "n_victory_0": "assets/audio/n_victory_0.mp3",
+    "n_defeat_0": "assets/audio/n_defeat_0.mp3",
     "n_malecon_arrive_0": "assets/audio/n_malecon_arrive_0.mp3",
     "n_malecon_again_0": "assets/audio/n_malecon_again_0.mp3",
     "n_solar_arrive_0": "assets/audio/n_solar_arrive_0.mp3",
@@ -43,10 +36,7 @@ window.ASSETS = {
     "n_vinales_arrive_0": "assets/audio/n_vinales_arrive_0.mp3",
     "n_vinales_again_0": "assets/audio/n_vinales_again_0.mp3",
     "n_ceiba_arrive_0": "assets/audio/n_ceiba_arrive_0.mp3",
-    "n_ceiba_again_0": "assets/audio/n_ceiba_again_0.mp3",
-    "n_victory_0": "assets/audio/n_victory_0.mp3",
-    "n_defeat_0": "assets/audio/n_defeat_0.mp3",
-    "music": "assets/audio/reparto.mp3"
+    "n_ceiba_again_0": "assets/audio/n_ceiba_again_0.mp3"
   },
   "sprites": {
     "tito_happy": "assets/img/tito_happy.png",
@@ -64,6 +54,7 @@ window.ASSETS = {
     "guardian_vinales": "assets/img/guardian_vinales.png",
     "guardian_ceiba": "assets/img/guardian_ceiba.png",
     "cafetera": "assets/img/cafetera.png",
-    "domino": "assets/img/domino.png"
+    "domino": "assets/img/domino.png",
+    "tito_idle": "assets/img/tito_idle.png"
   }
 };

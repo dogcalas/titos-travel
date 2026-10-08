@@ -9,6 +9,7 @@
   const GL = window.Scene3D;
   const SUB = window.Subtitles;
   const BOARD = window.Scoreboard;
+  const FX = window.Fireworks;
 
   const MAX_LIVES = 5;
   const QUESTIONS_PER_DIMENSION = 2;
@@ -92,22 +93,6 @@
     const f = $("flash");
     f.className = ""; void f.offsetWidth; f.className = kind;
     if (kind === "cold") { document.body.classList.remove("chill"); void document.body.offsetWidth; document.body.classList.add("chill"); }
-  }
-
-  function emojiBurst() {
-    const layer = $("particles");
-    for (let i = 0; i < 22; i++) {
-      const s = document.createElement("span");
-      s.className = "particle";
-      s.textContent = pick(N.successEmojis);
-      s.style.left = `${Math.random() * 100}vw`;
-      s.style.top = `${70 + Math.random() * 30}vh`;
-      s.style.setProperty("--dx", `${(Math.random() - 0.5) * 30}vw`);
-      s.style.setProperty("--rot", `${(Math.random() - 0.5) * 120}deg`);
-      s.style.animationDelay = `${Math.random() * 0.5}s`;
-      layer.appendChild(s);
-      setTimeout(() => s.remove(), 3500);
-    }
   }
 
   function dustFrom(el) {
@@ -215,8 +200,8 @@
     GL.setTitoPose("idle");
     const keys = N.intro.paragraphs.map((_, i) => `n_intro_${i}`);
     SUB.play(N.intro.paragraphs, keys, () => { GL.openPortal(true); GL.setTitoPose("walk"); setTimeout(nextTurn, 900); }, {
-      // Párrafo 2: la cafetera repica como una clave y se abre el portal.
-      onParagraph: (i) => { if (i === 1) { SFX.playClave(); setTimeout(() => SFX.playClave(), 1800); setTimeout(() => GL.openPortal(true), 2500); } }
+      // Párrafo 2: el vapor de la cafetera abre el portal.
+      onParagraph: (i) => { if (i === 1) setTimeout(() => GL.openPortal(true), 2500); }
     });
   }
 
@@ -241,19 +226,18 @@
     $("hud-place").textContent = dim.place;
     $("hud-level").textContent = `Nivel ${dim.level} · ${N.levels[dim.level]}`;
     renderHud();
-    if (firstInDim) { if (dim.key === "cabana") SFX.playCannon(); else SFX.playClave(); }
+    if (firstInDim && dim.key === "cabana") SFX.playCannon();
 
-    // Narración de la llegada (cine), después el reto.
+    // El Guardián presenta su nivel con su propia voz; después, el reto.
     show(null);
     const paras = firstInDim ? dim.arrive : dim.again;
     const keys = paras.map((_, i) => `n_${dim.key}_${firstInDim ? "arrive" : "again"}_${i}`);
-    SUB.play(paras, keys, () => showChallenge(dim, q, firstInDim));
+    SUB.play(paras, keys, () => showChallenge(dim, q, firstInDim), { speaker: dim.guardian });
   }
 
   function showChallenge(dim, q, firstInDim) {
     GL.openPortal(false);
     GL.setTitoPose("think");
-    if (firstInDim) speak(`guardian_${dim.key}`);
     const avatar = $("guardian-avatar");
     const sprite = ASSETS.sprites && ASSETS.sprites[`guardian_${dim.key}`];
     avatar.hidden = !sprite;
@@ -297,9 +281,8 @@
       addScore(points);
       floatPoints(`+${fmt(points)}${streakBonus ? `  🔥×${state.streak}` : ""}`);
       const win = dim.win.charAt(0).toUpperCase() + dim.win.slice(1);
-      SUB.flash(`${win}. La ficha de nácar brilla y ancla el recuerdo. ${shuffle(N.successEmojis).slice(0, 3).join(" ")}`, "Recuerdo anclado");
-      flash("warm");
-      emojiBurst();
+      SUB.flash(`${win}. La ficha de nácar brilla y ancla el recuerdo.`, "Recuerdo anclado");
+      FX.show(4 + Math.min(4, state.streak));
       SFX.playSuccess();
       GL.dominoGlow();
       GL.titoCelebrate();
@@ -341,7 +324,7 @@
     GL.openPortal(won);
     GL.setGuardian(won ? "ceiba" : null);
     GL.setTitoPose(won ? "coffee" : "cold");
-    if (won) { flash("warm"); emojiBurst(); SFX.playSuccess(); } else { SFX.playFailure(); }
+    if (won) { FX.show(12); SFX.playSuccess(); } else { SFX.playFailure(); }
     renderHud();
 
     // Epílogo narrado, luego el panel de resultados.
@@ -416,7 +399,6 @@
     err.hidden = true;
     SFX.resume();
     SFX.startSea();
-    SFX.playClave();
     MUSIC.start("miami");
     newGame();
   }
@@ -471,6 +453,7 @@
 
   // ---------- Arranque ----------
   if (GL.init($("gl"))) document.body.classList.add("gl-on");
+  FX.init();
   SUB.init({ onDuck: (s) => MUSIC.duckFor(s) });
   startTitle();
 })();

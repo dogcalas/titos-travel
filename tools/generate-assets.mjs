@@ -46,22 +46,27 @@ if (!KEY) {
 const GREEN =
   " The background must be a completely flat, uniform, solid bright chroma-key green (#00FF00) with no shadows on it, " +
   "no floor, no gradient, no props, no text. Nothing in the character may be green.";
+// Para Tito usamos magenta: su ropa clara recoge menos "spill" y el recorte por tono lo separa mejor.
+const MAGENTA =
+  " The background must be a completely flat, uniform, solid bright chroma-key magenta (#FF00FF) with no shadows on it, " +
+  "no floor, no gradient, no props, no text, no vignette. Nothing in the character may be pink or magenta.";
 
 const PIXAR = "Stylized 3D animated-film look (Pixar-like), soft studio lighting, high detail, full body visible with margin above head and below feet, centered.";
 
 const TITO_DESC =
-  "Tito: a 35-year-old Cuban man, light brown skin, short dark curly hair, slight stubble, warm expressive eyes, " +
-  "wearing a white linen guayabera shirt with four pockets, beige pants and brown leather loafers.";
+  "Tito: a 35-year-old Cuban man, light brown skin, short dark curly hair with a fade, slight stubble, warm expressive eyes, " +
+  "wearing a fitted short-sleeve light-blue linen shirt (plain, no pockets) open over a white t-shirt, dark slim jeans, " +
+  "clean white sneakers and a thin gold chain.";
 
 // Poses de Tito. "idle" es la referencia; las demás se generan a partir de ella para mantener el personaje.
 const TITO_BASE = `Full-body character design of ${TITO_DESC} Use the attached image as the exact reference for his face, hair, body, outfit and rendering style; keep them identical. ${PIXAR}`;
 const TITO_POSES = {
-  idle: `Full-body character design of ${TITO_DESC} Standing idle, relaxed, slight smile, facing the viewer, three-quarter view. ${PIXAR}${GREEN}`,
-  happy: `${TITO_BASE} Pose: jumping with joy, both arms raised high, big open-mouth laugh, eyes squeezed shut with happiness, feet off the ground.${GREEN}`,
-  cold: `${TITO_BASE} Pose: cold and sad, hugging himself with both arms, shoulders hunched, shivering, eyes downcast, mouth in a small sad line.${GREEN}`,
-  think: `${TITO_BASE} Pose: thinking hard, one hand on his chin, eyebrows raised, looking up and to the side, slight nervous smile.${GREEN}`,
-  walk: `${TITO_BASE} Pose: seen from behind, walking away from the viewer with determination, one foot forward, right hand slightly raised as if touching a curtain of steam.${GREEN}`,
-  coffee: `${TITO_BASE} Pose: holding a tiny white Cuban coffee cup near his face with both hands, eyes closed, smiling peacefully, savoring the aroma.${GREEN}`
+  idle: `Full-body character design of ${TITO_DESC} Standing idle, relaxed, slight smile, facing the viewer, three-quarter view. ${PIXAR}${MAGENTA}`,
+  happy: `${TITO_BASE} Pose: jumping with joy, both arms raised high, big open-mouth laugh, eyes squeezed shut with happiness, feet off the ground.${MAGENTA}`,
+  cold: `${TITO_BASE} Pose: cold and sad, hugging himself with both arms, shoulders hunched, shivering, eyes downcast, mouth in a small sad line.${MAGENTA}`,
+  think: `${TITO_BASE} Pose: thinking hard, one hand on his chin, eyebrows raised, looking up and to the side, slight nervous smile.${MAGENTA}`,
+  walk: `${TITO_BASE} Pose: seen from behind, walking away from the viewer with determination, one foot forward, right hand slightly raised. Nothing else in the frame: no steam, no smoke, no curtain, no objects.${MAGENTA}`,
+  coffee: `${TITO_BASE} Pose: holding a tiny white Cuban coffee cup near his face with both hands, eyes closed, smiling peacefully, savoring the aroma.${MAGENTA}`
 };
 
 const GUARDIANS = {
@@ -271,15 +276,18 @@ async function narrationJobs() {
   vm.runInNewContext(await readFile(path.join(ROOT, "js", "narrative.js"), "utf8"), sandbox);
   const N = sandbox.window.NARRATIVE;
   const strip = (html) => html.replace(/<[^>]+>/g, "");
+  // [clave, texto con instrucción de estilo, voz]
   const jobs = [];
-  N.intro.paragraphs.forEach((t, i) => jobs.push([`n_intro_${i}`, strip(t)]));
+  N.intro.paragraphs.forEach((t, i) => jobs.push([`n_intro_${i}`, NARRATOR_STYLE + strip(t), TTS_VOICE]));
   for (const d of N.dimensions) {
-    d.arrive.forEach((t, i) => jobs.push([`n_${d.key}_arrive_${i}`, strip(t)]));
-    d.again.forEach((t, i) => jobs.push([`n_${d.key}_again_${i}`, strip(t)]));
+    const [style, , voice] = GUARDIAN_LINES[d.key];
+    const asGuardian = (t) => `Habla en español cubano, en primera persona, como ${style}, con ritmo ágil y natural: ${strip(t)}`;
+    d.arrive.forEach((t, i) => jobs.push([`n_${d.key}_arrive_${i}`, asGuardian(t), voice]));
+    d.again.forEach((t, i) => jobs.push([`n_${d.key}_again_${i}`, asGuardian(t), voice]));
   }
-  N.victory.paragraphs.forEach((t, i) => jobs.push([`n_victory_${i}`, strip(t)]));
-  N.defeat.paragraphs.forEach((t, i) => jobs.push([`n_defeat_${i}`, strip(t)]));
-  return jobs.map(([k, t]) => [k, NARRATOR_STYLE + t]);
+  N.victory.paragraphs.forEach((t, i) => jobs.push([`n_victory_${i}`, NARRATOR_STYLE + strip(t), TTS_VOICE]));
+  N.defeat.paragraphs.forEach((t, i) => jobs.push([`n_defeat_${i}`, NARRATOR_STYLE + strip(t), TTS_VOICE]));
+  return jobs;
 }
 
 async function generateNarration(manifest) {
@@ -294,7 +302,7 @@ async function generateNarration(manifest) {
       delete manifest.audio[key];
     }
   }
-  for (const [name, text] of jobs) {
+  for (const [name, text, voice] of jobs) {
     const rel = `assets/audio/${name}.wav`;
     if (!force && manifest.audio[name] && (await exists(path.join(ROOT, manifest.audio[name])))) {
       console.log(`· ${name}: ya existe`);
@@ -302,7 +310,7 @@ async function generateNarration(manifest) {
     }
     process.stdout.write(`🎙️  ${name}… `);
     try {
-      await writeFile(path.join(ROOT, rel), await tts(text));
+      await writeFile(path.join(ROOT, rel), await tts(text, voice));
       manifest.audio[name] = rel;
       await saveManifest(manifest);
       console.log("ok");
@@ -315,10 +323,8 @@ async function generateNarration(manifest) {
 async function generateAudio(manifest) {
   const dir = path.join(ROOT, "assets", "audio");
   await mkdir(dir, { recursive: true });
+  // Solo la voz de la cafetera en la pantalla de título; los Guardianes narran sus propias escenas (--only=narration).
   const jobs = [["intro", INTRO_NARRATION, "Sulafat"]];
-  for (const [key, [style, line, voice]] of Object.entries(GUARDIAN_LINES)) {
-    jobs.push([`guardian_${key}`, `Lee esto en español cubano, como ${style}: ${line}`, voice]);
-  }
   for (const [name, text, voice] of jobs) {
     const rel = `assets/audio/${name}.wav`;
     if (!force && manifest.audio[name] && (await exists(path.join(ROOT, manifest.audio[name])))) {

@@ -74,6 +74,8 @@ body.chill #hud, body.chill .challenge { animation: shiver 0.5s ease-in-out 2; }
 @keyframes shiver { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 
 #particles { position: fixed; inset: 0; z-index: 45; pointer-events: none; overflow: hidden; }
+#fireworks { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 44; pointer-events: none; opacity: 0; transition: opacity .3s; }
+#fireworks.on { opacity: 1; }
 .particle { position: absolute; font-size: 1.8rem; animation: floatUp 2.6s ease-out forwards; }
 @keyframes floatUp { to { transform: translate(var(--dx), -70vh) rotate(var(--rot)) scale(1.2); opacity: 0; } }
 .dust { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #5b6168; animation: dustFall 1.6s ease-in forwards; }

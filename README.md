@@ -7,11 +7,12 @@ los retos de los Guardianes.
 
 - **Escena 3D** (Three.js): fondos ilustrados con parallax, portal de vapor con shaders, Neblina volumétrica,
   partículas, fichas de dominó que brillan o se hacen añicos, Tito y los Guardianes como sprites.
-- **Narración con voz y subtítulos** cinematográficos (letterbox, "toca para avanzar", *Saltar*).
+- **Narración con voz y subtítulos** cinematográficos (letterbox, "toca para avanzar", *Saltar*): un narrador
+  para el prólogo y el final, y **cada Guardián presenta su nivel con su propia voz**.
 - **HUD de juego**: puntos, racha, fichas, progreso, temporizador de 25 s por pregunta.
-- **Música**: tema de reparto (reguetón cubano) instrumental generado con **Lyria**, en bucle, que pasa por una
-  cadena de Web Audio y se "enfría" (filtro) cuando la Neblina gana terreno. Sin la pista, suena un beat de
-  reparto sintetizado con tempo y tono por dimensión.
+- **Música**: beat de reparto (reguetón cubano) sintetizado con Web Audio, con tempo y tono por dimensión, que se
+  "enfría" cuando la Neblina gana terreno. Opcional: `--only=music` genera un tema con **Lyria** que el juego usa
+  en su lugar si está en el manifiesto.
 - **Scoreboard con nombres únicos**: cada jugador reclama un nombre (sin distinguir mayúsculas ni acentos) y
   recibe un token; su mejor marca queda en el ranking.
 - 1000 preguntas del Cubanómetro, complejidad 1–9 → de *Recuerdo Borroso* a *Cubano de Pura Cepa*.
@@ -80,7 +81,7 @@ Modelos por defecto: `gemini-2.5-flash-image`, `gemini-3.1-flash-tts-preview` y 
 facturación activa en Google AI Studio. Ojo: `gemini-3.8-flash-tts` lee en voz alta la instrucción de estilo;
 los modelos *preview* 2.5 y 3.1 la obedecen sin leerla.
 
-Duraciones de narración: intro < 1 min; cada llegada o regreso a una dimensión, 15–20 s (un párrafo de ~50 palabras).
+Duraciones de narración: intro < 1 min; cada Guardián habla 8–16 s por escena (~30–40 palabras).
 
 ### Música propia
 

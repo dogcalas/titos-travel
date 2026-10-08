@@ -35,11 +35,11 @@ window.NARRATIVE = {
       emoji: "🌊",
       guardian: "El Pescador de Espuma",
       arrive: [
-        "Tito pisa el muro del Malecón. Las olas cuelgan en el aire como cortinas de cristal verde, y en cada una duerme un recuerdo. Desde el Vedado avanza la Neblina, gris, con olor a gasolina. En el muro, un viejo de espuma de mar lo mira con ojos de caracol."
+        "Mucho tiempo sin venir, muchacho. Este es el Malecón, donde las olas guardan los recuerdos. Pero la Neblina del Norte viene por el Vedado a borrarlos. A ver si te acuerdas de lo que te enseñó tu abuela."
       ],
 
       again: [
-        "La Neblina apaga los faroles uno a uno y un almendrón sin chofer se deshace en humo. El Pescador saca del aire, con su vara, una palabra brillante que se retuerce en el anzuelo."
+        "¿Viste? La Neblina ya apagó dos faroles. Acabo de pescar una palabra que se te estaba escapando. Agárrala rápido, antes de que se la trague el frío."
       ],
 
       win: "las olas congeladas se descongelan de golpe y revientan contra el muro en una explosión de espuma color turquesa; los faroles se encienden uno a uno hasta el Morro y un trío empieza a tocar «Guantanamera» desde un banco",
@@ -52,11 +52,11 @@ window.NARRATIVE = {
       emoji: "☕",
       guardian: "Mamá Inés, la del Café Eterno",
       arrive: [
-        "El portal lo deja en el patio de un solar habanero. La ropa tendida baila sola y las paredes se repintan de rosado, pero por la escalera baja un frío de banco. Frente al fogón, una señora de pañuelo blanco cuela un café que nunca se acaba."
+        "Ay, mijo, siéntate, que este es mi solar. Aquí el café no se acaba nunca y la ropa baila sola en la tendedera. Pero por la escalera baja un frío de banco. Antes de darte la tacita, dime una cosa."
       ],
 
       again: [
-        "Una puerta se cierra sola y una sábana blanca se vuelve gris y cae. Mamá Inés sopla el humo del café hacia la Neblina, como quien espanta un mosquito, y le sirve otra tacita."
+        "¿Oíste ese portazo? Es la Neblina. Esa cosa le tiene miedo al café fuerte y a la gente que se acuerda. Toma, otra tacita. Y contéstame esta."
       ],
 
       win: "el patio estalla en colores de pared recién pintada, la ropa tendida se infla como velas de un barco y desde todos los balcones a la vez se oye un coro: «¡todos los negros tomamos café!»",
@@ -69,11 +69,11 @@ window.NARRATIVE = {
       emoji: "🎠",
       guardian: "Pin Pón, el Muñeco de Cartón",
       arrive: [
-        "Tito cae sobre un caballito de un carrusel oxidado. Los algodones de azúcar flotan como nubes, pero los caballitos se van volviendo grises, de plástico. Del carrusel se baja un muñeco de cartón con los cachetes pintados y lo mira con ojos de botón."
+        "¡Hola! Soy Pin Pón, y este es el parque de los caballitos. Mira cómo se están poniendo grises, de plástico. Si no te acuerdas de esto, el parque se cierra para siempre."
       ],
 
       again: [
-        "La noria se detiene con un chirrido y las luces se vuelven fluorescentes de supermercado. Pin Pón le tira de la manga: ese altavoz es de la Neblina, no le hagas caso."
+        "¡La noria se paró! Y ese altavoz que habla en inglés es de la Neblina, no le hagas caso. Contéstame esta otra y la noria vuelve a girar."
       ],
 
       win: "la noria arranca de nuevo con un estruendo de bombillos de colores, los caballitos relinchan de verdad y una lluvia de algodón de azúcar color mamey cae sobre los niños que vuelven a correr gritando",
@@ -86,11 +86,11 @@ window.NARRATIVE = {
       emoji: "🧺",
       guardian: "Cuco, el Bodeguero de los Cuatro Brazos",
       arrive: [
-        "El portal se abre tras el mostrador de la bodega del barrio: pizarra con tiza, sacos de arroz, olor a jabón. Pero los estantes se llenan de cajas idénticas con códigos de barra. Un bodeguero de cuatro brazos grita: ¿quién es el último?"
+        "¿Quién es el último? ¡Tú! Bienvenido a mi bodega: arroz, frijoles, jabón de lavar y la pizarra con tiza. Pero mira cómo se llenan los estantes de cajas con código de barra. Para que te despache, me tienes que contestar."
       ],
 
       again: [
-        "Una registradora digital aparece en el mostrador e imprime un ticket interminable; las señoras de la cola se vuelven transparentes. Cuco la tira a un saco de frijoles: aquí se paga con memoria."
+        "¡Una caja registradora digital en mi mostrador! Mira cómo se transparentan las señoras de la cola. Aquí se paga con memoria, compadre. ¡Dale, otra, que la cola espera!"
       ],
 
       win: "los estantes se llenan de frascos de dulce de guayaba que brillan como lámparas, la pizarra se reescribe sola con tiza de colores y la cola entera aplaude mientras el viejo de la pelota grita «¡jonrón!»",
@@ -103,11 +103,11 @@ window.NARRATIVE = {
       emoji: "💥",
       guardian: "El Artillero de las Nueve",
       arrive: [
-        "Tito aparece en las murallas de La Cabaña al caer la tarde. La Habana prende sus luces, pero el cielo se pone gris de parqueo y el reloj marca una hora que no existe. Junto al cañón, un artillero de casaca roja sostiene una mecha que nunca se consume."
+        "Soldado, estás en las murallas de La Cabaña. Cada noche a las nueve disparo el cañonazo y La Habana cierra sus puertas. Pero el reloj marca una hora que no existe. Respóndeme, y yo disparo."
       ],
 
       again: [
-        "La Neblina sube por la bahía como marea sucia y tapa la boca del cañón. La mecha chisporrotea azul, y en vez de campanas suena una alarma de carro que nadie apaga."
+        "La Neblina sube por la bahía y me está tapando la boca del cañón. La mecha chisporrotea azul. Otra respuesta, Sangre Mambisa, que esta ciudad lleva siglos cerrando a las nueve."
       ],
 
       win: "el cañón truena con un ¡BUUUM! que sacude la bahía entera, el cielo se rompe en franjas violetas y anaranjadas, y todas las luces de La Habana se encienden a la vez como si alguien hubiera subido el breaker del mundo",
@@ -120,11 +120,11 @@ window.NARRATIVE = {
       emoji: "🚗",
       guardian: "Chicho, el Chofer de Almendrón",
       arrive: [
-        "El portal es la puerta trasera de un Chevrolet del 57 por una Carretera Central infinita. Por las ventanillas pasan cañaverales y playas, pero cada vez que Tito parpadea se cuela un tramo del Palmetto. El chofer lo mira por el retrovisor: no me tires la puerta."
+        "No me tires la puerta, ¿eh? Este Chevrolet del 57 camina con gasolina de recuerdos por la Carretera Central. Pero cada vez que parpadeas se cuela el Palmetto. Si no me contestas, nos quedamos botados."
       ],
 
       again: [
-        "El motor tose. En el radio el reguetón se corta y entra un locutor en inglés vendiendo seguros. Chicho le da un manotazo: échale otra respuesta al tanque, que vamos subiendo la loma."
+        "¿Oíste el motor toser? Y en el radio se metió un locutor en inglés vendiendo seguros. Échale otra respuesta al tanque, mi hermano, que estamos subiendo la loma."
       ],
 
       win: "el almendrón ruge como un león, las vallas del Palmetto salen volando como hojas secas y el carro entra a toda velocidad en un atardecer rojo de Cuba, con las ventanillas bajas y el son a todo volumen",
@@ -137,11 +137,11 @@ window.NARRATIVE = {
       emoji: "🥁",
       guardian: "El Diablito de la Conga",
       arrive: [
-        "El calor golpea primero. Tito está en medio de una conga santiaguera: corneta china, tambores, farolas girando. Pero donde pasa la Neblina la gente se queda quieta mirando el celular. Un diablito de rayas baila a su alrededor sin tocar el suelo."
+        "¡Arriba, que esto es el carnaval de Santiago! Corneta china, tambores, farolas. Pero donde pasa la Neblina la gente se queda mirando el celular. Para entrar en la conga tienes que demostrar que eres de aquí."
       ],
 
       again: [
-        "La corneta china desafina y se calla; una farola se apaga como un globo pinchado. El Diablito sacude sus campanitas: ¡eso no es carnaval, eso es un funeral de oficina!"
+        "¡La corneta china se calló y una farola se apagó como un globo pinchado! Eso no es carnaval, eso es un funeral de oficina. ¡Contesta otra, que la conga necesita sangre!"
       ],
 
       win: "la corneta china lanza un grito que rompe la neblina en mil pedazos, los tambores retumban como un terremoto feliz y la conga entera arrastra a Tito calle abajo entre lentejuelas, farolas encendidas y una lluvia de confeti dorado",
@@ -154,11 +154,11 @@ window.NARRATIVE = {
       emoji: "🌿",
       guardian: "El Guajiro del Humo Sabio",
       arrive: [
-        "Viñales al amanecer: mogotes entre la neblina buena, la blanca, con olor a tierra colorada y tabaco. Pero del norte llega la gris, y donde toca los mogotes se vuelven edificios de cristal. En un bohío, un guajiro fuma un tabaco cuyo humo dibuja un caballo."
+        "Siéntate, compay, que esto es Viñales al amanecer. La neblina blanca es la buena; la gris que viene del norte convierte los mogotes en edificios de cristal. Hay cosas que solo sabe el que se crió aquí."
       ],
 
       again: [
-        "La neblina gris trepa las lomas y un mogote se convierte en un condominio con piscina. El gallo se calla. El guajiro se sacude el sombrero: esa cosa no sabe lo que es una décima. Pero tú sí."
+        "Mira eso: un mogote entero convertido en condominio con piscina, y el gallo que se calló a medio canto. Esa cosa no sabe lo que es una décima. Pero tú sí. A ver."
       ],
 
       win: "el humo del tabaco se convierte en un torbellino verde y dorado que barre la neblina gris valle abajo; los mogotes vuelven a brotar de la tierra colorada como gigantes despertando, y desde todas las lomas llega una décima cantada a viva voz",
@@ -171,11 +171,11 @@ window.NARRATIVE = {
       emoji: "🌳",
       guardian: "La Abuela Ceiba",
       arrive: [
-        "El último portal se desenrolla como una raíz. Tito está al pie de una ceiba más alta que Brickell, con raíces por toda la isla por donde corren ríos de recuerdos. La Neblina la rodea como un huracán gris. En la corteza se abre un rostro de abuela lleno de luz."
+        "Has llegado hasta la semilla, mi niño. Soy la Ceiba, y mis raíces llegan a toda la isla. La Neblina me rodea como un huracán gris. Aquí no basta con acordarse un poquito: hay que ser cubano de pura cepa."
       ],
 
       again: [
-        "El huracán aprieta y cada hoja que cae es un recuerdo que se apaga. De lejos llama el tráfico de la I-95. Las raíces le sostienen los tobillos: una más, mi niño. Dímela con el corazón."
+        "Cada hoja que cae es un recuerdo que se apaga, y desde lejos te llama el tráfico de la I-95. Yo te sostengo. Una más, mi niño. Dímela con el corazón."
       ],
 
       win: "la ceiba se ilumina desde las raíces hasta la copa como un relámpago al revés, el huracán gris se deshace en lluvia tibia de verano y por cada rama florece un recuerdo: el mar, el café, la voz de la abuela, la clave que nunca dejó de sonar",

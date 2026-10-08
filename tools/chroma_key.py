@@ -106,6 +106,12 @@ def key_out(im: Image.Image) -> Image.Image:
         seed(x, 0); seed(x, h - 1)
     for y in range(h):
         seed(0, y); seed(w - 1, y)
+    # Bolsas de fondo encerradas (entre brazos y cabeza): verde puro, muy saturado, en cualquier parte.
+    for y in range(0, h):
+        for x in range(0, w):
+            c = px[x, y]
+            if sat(c) >= 80 and hue_diff(hue(c), _key_hue[0]) <= 14:
+                q.append((x, y, c))
     # Crecimiento de región desde el borde: atraviesa viñetas grises y degradados, se detiene en contornos nítidos.
     while q:
         x, y, prev = q.popleft()
