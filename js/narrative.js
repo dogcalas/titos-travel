@@ -6,9 +6,9 @@ window.NARRATIVE = {
     title: "El Viaje de Tito",
     subtitle: "El Retorno a la Semilla",
     paragraphs: [
-      "Miami, 11:47 de la noche. Desde el piso catorce, Tito mira la I-95: un río de luces rojas y blancas que no lleva a ninguna parte. Tiene treinta y cinco años y una sospecha que no le cuenta a nadie: algo le está borrando la isla por dentro. Los viejos del dominó le dicen <em>la Neblina del Norte</em>.",
-      "Esa noche saca del fondo del gabinete la vieja cafetera que se trajo de Cuba. Le echa el café, la pone en la hornilla y espera. El vapor no se disipa: se vuelve dorado, huele a salitre y a tabaco, y se abre en medio de la cocina como una puerta.",
-      "—Tito —dice la cafetera con voz de abuela—, cruza. Busca tus recuerdos donde los dejaste. Llevas cinco fichas de dominó de nácar en el bolsillo: cuídalas. Y no vas solo: contigo va tu <strong>Sangre Mambisa</strong>. Al otro lado ya se oye el mar contra el muro."
+      "Miami, 11:47 de la noche. Desde el piso catorce, Tito mira la I-95: un río de luces que no lleva a ninguna parte. Tiene treinta y cinco años y una sospecha: algo le está borrando la isla por dentro. Los viejos del dominó le dicen <em>la Neblina del Norte</em>.",
+      "Esa noche saca la vieja cafetera que se trajo de Cuba y la pone en la hornilla. El vapor no se disipa: se vuelve dorado, huele a salitre y tabaco, y se abre en la cocina como una puerta.",
+      "—Tito —dice la cafetera con voz de abuela—, cruza y busca tus recuerdos. Llevas cinco fichas de dominó de nácar: cuídalas. Y no vas solo: contigo va tu <strong>Sangre Mambisa</strong>."
     ],
 
     cta: "☕ Cruzar el vapor"
@@ -35,11 +35,11 @@ window.NARRATIVE = {
       emoji: "🌊",
       guardian: "El Pescador de Espuma",
       arrive: [
-        "Tito sale del vapor y pisa el muro del Malecón. Las olas están suspendidas en el aire como cortinas de cristal verde, y dentro de cada una duerme un recuerdo. Desde el Vedado avanza la Neblina del Norte, gris, con olor a gasolina. En el muro, un viejo hecho de espuma de mar lo mira con ojos de caracol."
+        "Tito pisa el muro del Malecón. Las olas cuelgan en el aire como cortinas de cristal verde, y en cada una duerme un recuerdo. Desde el Vedado avanza la Neblina, gris, con olor a gasolina. En el muro, un viejo de espuma de mar lo mira con ojos de caracol."
       ],
 
       again: [
-        "La Neblina se enrosca en los faroles y los apaga uno a uno. Un almendrón azul pasa flotando sin chofer y se deshace en humo. El Pescador tira de su vara y saca del aire una palabra brillante que se retuerce en el anzuelo."
+        "La Neblina apaga los faroles uno a uno y un almendrón sin chofer se deshace en humo. El Pescador saca del aire, con su vara, una palabra brillante que se retuerce en el anzuelo."
       ],
 
       win: "las olas congeladas se descongelan de golpe y revientan contra el muro en una explosión de espuma color turquesa; los faroles se encienden uno a uno hasta el Morro y un trío empieza a tocar «Guantanamera» desde un banco",
@@ -52,11 +52,11 @@ window.NARRATIVE = {
       emoji: "☕",
       guardian: "Mamá Inés, la del Café Eterno",
       arrive: [
-        "El portal lo deja en el patio de un solar de La Habana Vieja. La ropa tendida baila sola y las paredes se repintan de rosado y amarillo, pero por la escalera baja un frío de banco. Frente al fogón, una señora de pañuelo blanco cuela un café que nunca se acaba."
+        "El portal lo deja en el patio de un solar habanero. La ropa tendida baila sola y las paredes se repintan de rosado, pero por la escalera baja un frío de banco. Frente al fogón, una señora de pañuelo blanco cuela un café que nunca se acaba."
       ],
 
       again: [
-        "Una puerta se cierra sola con golpe seco y una sábana blanca se vuelve gris y cae al suelo. Mamá Inés sopla el humo del café hacia la Neblina como quien espanta un mosquito y le sirve otra tacita."
+        "Una puerta se cierra sola y una sábana blanca se vuelve gris y cae. Mamá Inés sopla el humo del café hacia la Neblina, como quien espanta un mosquito, y le sirve otra tacita."
       ],
 
       win: "el patio estalla en colores de pared recién pintada, la ropa tendida se infla como velas de un barco y desde todos los balcones a la vez se oye un coro: «¡todos los negros tomamos café!»",
@@ -69,11 +69,11 @@ window.NARRATIVE = {
       emoji: "🎠",
       guardian: "Pin Pón, el Muñeco de Cartón",
       arrive: [
-        "Tito cae sobre un caballito de madera en un carrusel oxidado. Los algodones de azúcar flotan como nubes rosadas, pero los caballitos se van volviendo grises, de plástico. Del carrusel se baja un muñeco de cartón, muy lindo, con los cachetes pintados, y lo mira con ojos de botón."
+        "Tito cae sobre un caballito de un carrusel oxidado. Los algodones de azúcar flotan como nubes, pero los caballitos se van volviendo grises, de plástico. Del carrusel se baja un muñeco de cartón con los cachetes pintados y lo mira con ojos de botón."
       ],
 
       again: [
-        "La noria se detiene con un chirrido y las luces de colores se vuelven fluorescentes de supermercado. Pin Pón le tira de la manga: ese altavoz es de la Neblina, no le hagas caso."
+        "La noria se detiene con un chirrido y las luces se vuelven fluorescentes de supermercado. Pin Pón le tira de la manga: ese altavoz es de la Neblina, no le hagas caso."
       ],
 
       win: "la noria arranca de nuevo con un estruendo de bombillos de colores, los caballitos relinchan de verdad y una lluvia de algodón de azúcar color mamey cae sobre los niños que vuelven a correr gritando",
@@ -86,11 +86,11 @@ window.NARRATIVE = {
       emoji: "🧺",
       guardian: "Cuco, el Bodeguero de los Cuatro Brazos",
       arrive: [
-        "El portal se abre detrás del mostrador de la bodega del barrio: pizarra con tiza, sacos de arroz, olor a jabón de lavar. Pero los estantes se llenan de cajas idénticas con códigos de barra. Un bodeguero de cuatro brazos grita: ¿quién es el último?"
+        "El portal se abre tras el mostrador de la bodega del barrio: pizarra con tiza, sacos de arroz, olor a jabón. Pero los estantes se llenan de cajas idénticas con códigos de barra. Un bodeguero de cuatro brazos grita: ¿quién es el último?"
       ],
 
       again: [
-        "Una caja registradora digital aparece sobre el mostrador e imprime un ticket interminable. Las señoras de la cola se vuelven transparentes. Cuco la tira a un saco de frijoles: aquí se paga con memoria, compadre."
+        "Una registradora digital aparece en el mostrador e imprime un ticket interminable; las señoras de la cola se vuelven transparentes. Cuco la tira a un saco de frijoles: aquí se paga con memoria."
       ],
 
       win: "los estantes se llenan de frascos de dulce de guayaba que brillan como lámparas, la pizarra se reescribe sola con tiza de colores y la cola entera aplaude mientras el viejo de la pelota grita «¡jonrón!»",
@@ -103,11 +103,11 @@ window.NARRATIVE = {
       emoji: "💥",
       guardian: "El Artillero de las Nueve",
       arrive: [
-        "Tito aparece sobre las murallas de La Cabaña al caer la tarde. La Habana prende sus luces, pero el cielo se pone gris de parqueo y el reloj marca una hora que no existe. Junto al cañón espera un artillero de casaca roja con una mecha que no se consume nunca."
+        "Tito aparece en las murallas de La Cabaña al caer la tarde. La Habana prende sus luces, pero el cielo se pone gris de parqueo y el reloj marca una hora que no existe. Junto al cañón, un artillero de casaca roja sostiene una mecha que nunca se consume."
       ],
 
       again: [
-        "La Neblina sube por la bahía como marea sucia y tapa la boca del cañón. La mecha chisporrotea azul. A lo lejos, en vez de campanas, suena una alarma de carro que nadie apaga."
+        "La Neblina sube por la bahía como marea sucia y tapa la boca del cañón. La mecha chisporrotea azul, y en vez de campanas suena una alarma de carro que nadie apaga."
       ],
 
       win: "el cañón truena con un ¡BUUUM! que sacude la bahía entera, el cielo se rompe en franjas violetas y anaranjadas, y todas las luces de La Habana se encienden a la vez como si alguien hubiera subido el breaker del mundo",
@@ -120,11 +120,11 @@ window.NARRATIVE = {
       emoji: "🚗",
       guardian: "Chicho, el Chofer de Almendrón",
       arrive: [
-        "El portal es la puerta trasera de un Chevrolet del 57 que corre por una Carretera Central infinita. Por las ventanillas pasan cañaverales y playas, pero cada vez que Tito parpadea se cuela un tramo del Palmetto. El chofer lo mira por el retrovisor: no me tires la puerta."
+        "El portal es la puerta trasera de un Chevrolet del 57 por una Carretera Central infinita. Por las ventanillas pasan cañaverales y playas, pero cada vez que Tito parpadea se cuela un tramo del Palmetto. El chofer lo mira por el retrovisor: no me tires la puerta."
       ],
 
       again: [
-        "El motor tose. En el radio, el reguetón se corta y entra un locutor en inglés vendiendo seguros. Chicho le da un manotazo al radio: échale otra respuesta al tanque, que estamos subiendo la loma."
+        "El motor tose. En el radio el reguetón se corta y entra un locutor en inglés vendiendo seguros. Chicho le da un manotazo: échale otra respuesta al tanque, que vamos subiendo la loma."
       ],
 
       win: "el almendrón ruge como un león, las vallas del Palmetto salen volando como hojas secas y el carro entra a toda velocidad en un atardecer rojo de Cuba, con las ventanillas bajas y el son a todo volumen",
@@ -137,11 +137,11 @@ window.NARRATIVE = {
       emoji: "🥁",
       guardian: "El Diablito de la Conga",
       arrive: [
-        "El calor golpea primero. Tito está en medio de una conga santiaguera: corneta china, tambores, farolas girando, cientos de cuerpos como una sola ola. Pero donde pasa la Neblina la gente se queda quieta mirando el celular. Un diablito de rayas baila a su alrededor sin tocar el suelo."
+        "El calor golpea primero. Tito está en medio de una conga santiaguera: corneta china, tambores, farolas girando. Pero donde pasa la Neblina la gente se queda quieta mirando el celular. Un diablito de rayas baila a su alrededor sin tocar el suelo."
       ],
 
       again: [
-        "La corneta china desafina y se calla. Una farola se apaga y cuelga como un globo pinchado. El Diablito sacude sus campanitas: ¡eso no es carnaval, eso es un funeral de oficina!"
+        "La corneta china desafina y se calla; una farola se apaga como un globo pinchado. El Diablito sacude sus campanitas: ¡eso no es carnaval, eso es un funeral de oficina!"
       ],
 
       win: "la corneta china lanza un grito que rompe la neblina en mil pedazos, los tambores retumban como un terremoto feliz y la conga entera arrastra a Tito calle abajo entre lentejuelas, farolas encendidas y una lluvia de confeti dorado",
@@ -154,11 +154,11 @@ window.NARRATIVE = {
       emoji: "🌿",
       guardian: "El Guajiro del Humo Sabio",
       arrive: [
-        "Viñales al amanecer: mogotes entre la neblina buena, la blanca, que huele a tierra colorada y tabaco. Pero del norte llega la gris, y donde toca los mogotes se vuelven edificios de cristal. En el portal de un bohío, un guajiro fuma un tabaco cuyo humo dibuja un caballo en el aire."
+        "Viñales al amanecer: mogotes entre la neblina buena, la blanca, con olor a tierra colorada y tabaco. Pero del norte llega la gris, y donde toca los mogotes se vuelven edificios de cristal. En un bohío, un guajiro fuma un tabaco cuyo humo dibuja un caballo."
       ],
 
       again: [
-        "La neblina gris trepa las lomas y un mogote entero se convierte en un condominio con piscina. El gallo se calla a medio canto. El guajiro se sacude el sombrero: esa cosa no sabe lo que es una décima. Pero tú sí."
+        "La neblina gris trepa las lomas y un mogote se convierte en un condominio con piscina. El gallo se calla. El guajiro se sacude el sombrero: esa cosa no sabe lo que es una décima. Pero tú sí."
       ],
 
       win: "el humo del tabaco se convierte en un torbellino verde y dorado que barre la neblina gris valle abajo; los mogotes vuelven a brotar de la tierra colorada como gigantes despertando, y desde todas las lomas llega una décima cantada a viva voz",
@@ -171,11 +171,11 @@ window.NARRATIVE = {
       emoji: "🌳",
       guardian: "La Abuela Ceiba",
       arrive: [
-        "El último portal se desenrolla como una raíz. Tito está al pie de una ceiba más alta que Brickell, con raíces hundidas en toda la isla por donde corren ríos de recuerdos. La Neblina rodea el árbol como un huracán gris. En la corteza se abre un rostro de abuela con los ojos llenos de luz."
+        "El último portal se desenrolla como una raíz. Tito está al pie de una ceiba más alta que Brickell, con raíces por toda la isla por donde corren ríos de recuerdos. La Neblina la rodea como un huracán gris. En la corteza se abre un rostro de abuela lleno de luz."
       ],
 
       again: [
-        "El huracán aprieta y cada hoja que cae es un recuerdo que se apaga. Desde muy lejos se oye el tráfico de la I-95, llamándolo de vuelta al frío. Las raíces le sostienen los tobillos: una más, mi niño. Dímela con el corazón."
+        "El huracán aprieta y cada hoja que cae es un recuerdo que se apaga. De lejos llama el tráfico de la I-95. Las raíces le sostienen los tobillos: una más, mi niño. Dímela con el corazón."
       ],
 
       win: "la ceiba se ilumina desde las raíces hasta la copa como un relámpago al revés, el huracán gris se deshace en lluvia tibia de verano y por cada rama florece un recuerdo: el mar, el café, la voz de la abuela, la clave que nunca dejó de sonar",
@@ -204,14 +204,14 @@ window.NARRATIVE = {
   victory: {
     title: "¡Tito ha vuelto a la semilla!",
     paragraphs: [
-      "Tito abre los ojos en su cocina de Miami, pero ya no es la misma: la I-95 le parece un Malecón de asfalto y el tráfico tiene el tumbao de una clave. Se sirve el café, llama a su sobrina y le dice: ven acá, que te voy a enseñar cómo termina Arroz con leche."
+      "Tito abre los ojos en su cocina de Miami, pero ya no es la misma: la I-95 le parece un Malecón de asfalto y el tráfico tiene tumbao de clave. Se sirve el café, llama a su sobrina y le dice: ven acá, que te voy a enseñar cómo termina Arroz con leche."
     ]
   },
 
   defeat: {
     title: "La Neblina se llevó la isla",
     paragraphs: [
-      "La última ficha se vuelve polvo gris en la palma de Tito y el vapor dorado se apaga como una vela. Está otra vez en su cocina, frente a una cafetera que no recuerda de dónde salió. Afuera ruge la I-95. Pero la cafetera, si uno escucha muy bien, todavía repica. Todavía hay tiempo de volver a intentarlo."
+      "La última ficha se vuelve polvo gris en la palma de Tito y el vapor se apaga como una vela. Está otra vez en su cocina, frente a una cafetera que no recuerda de dónde salió. Pero la cafetera, si uno escucha bien, todavía repica. Todavía hay tiempo de volver a intentarlo."
     ]
   }
 };

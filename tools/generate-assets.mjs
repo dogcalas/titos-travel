@@ -265,7 +265,7 @@ async function tts(text, voice = TTS_VOICE) {
 }
 
 // Narración completa de la historia (una pista por párrafo) para los subtítulos sincronizados.
-const NARRATOR_STYLE = "Narra en español cubano, como un narrador de cine cálido y nostálgico, voz grave, ritmo pausado pero con emoción: ";
+const NARRATOR_STYLE = "Narra en español cubano, como un narrador de cine cálido y nostálgico, voz grave, con emoción, a ritmo ágil y natural, sin pausas largas: ";
 async function narrationJobs() {
   const sandbox = { window: {} };
   vm.runInNewContext(await readFile(path.join(ROOT, "js", "narrative.js"), "utf8"), sandbox);
