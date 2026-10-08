@@ -283,7 +283,6 @@
       const win = dim.win.charAt(0).toUpperCase() + dim.win.slice(1);
       SUB.flash(`${win}. La ficha de nácar brilla y ancla el recuerdo.`, "Recuerdo anclado");
       FX.show(4 + Math.min(4, state.streak));
-      SFX.playSuccess();
       GL.dominoGlow();
       GL.titoCelebrate();
       const el = dominoEl(Math.max(0, state.lives - 1));
@@ -324,7 +323,7 @@
     GL.openPortal(won);
     GL.setGuardian(won ? "ceiba" : null);
     GL.setTitoPose(won ? "coffee" : "cold");
-    if (won) { FX.show(12); SFX.playSuccess(); } else { SFX.playFailure(); }
+    if (won) FX.show(12); else SFX.playFailure();
     renderHud();
 
     // Epílogo narrado, luego el panel de resultados.
