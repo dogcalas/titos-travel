@@ -41,10 +41,14 @@ Con la CLI en vez del dashboard:
 
 ```bash
 npm i -g wrangler && wrangler login
+cp wrangler.example.toml wrangler.toml
 wrangler kv namespace create titos-scores          # copia el id en wrangler.toml → [[kv_namespaces]] id
 wrangler pages project create titos-travel --production-branch main
 wrangler pages deploy . --project-name titos-travel
 ```
+
+> `wrangler.toml` está en `.gitignore` a propósito: si el repo lo incluye con un id de KV inválido,
+> el despliegue desde el dashboard falla con *Error 8000022: Invalid KV namespace ID*.
 
 Cada push a la rama de producción redespliega. Para un dominio propio: *Pages → Custom domains*.
 

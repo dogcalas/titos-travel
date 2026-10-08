@@ -1,0 +1,10 @@
+# Solo para desplegar por CLI: copia este archivo a wrangler.toml y pon el id real de tu KV.
+# Si despliegas desde el dashboard (Connect to Git), NO crees wrangler.toml: el binding SCORES se
+# configura en Pages → Settings → Bindings y un wrangler.toml con id inválido rompe el deploy.
+name = "titos-travel"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "SCORES"
+id = "REEMPLAZA_CON_EL_ID_DE_TU_KV"
