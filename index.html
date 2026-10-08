@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>El Viaje de Tito: El Retorno a la Semilla</title>
+  <meta name="description" content="Trivia inmersiva de cultura popular cubana: ayuda a Tito a recuperar sus recuerdos antes de que la Neblina del Norte se los borre.">
+  <meta name="theme-color" content="#0d1b2a">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-dim="miami">
+  <div id="scene-bg" aria-hidden="true"></div>
+  <div id="fog" aria-hidden="true"><div class="fog-layer a"></div><div class="fog-layer b"></div></div>
+  <div id="flash" aria-hidden="true"></div>
+  <div id="particles" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">☕ El Viaje de Tito</div>
+    <div class="topbar-right">
+      <div id="dominoes" class="dominoes" aria-label="Fichas de dominó"></div>
+      <button id="mute" class="icon-btn" type="button" aria-label="Silenciar sonido">🔊</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <!-- INTRO -->
+    <section id="screen-intro" class="card screen">
+      <p class="kicker">Un juego de trivia y realismo mágico cubano</p>
+      <h1 class="title">El Viaje de Tito</h1>
+      <p class="subtitle">El Retorno a la Semilla</p>
+      <div class="intro-text" id="intro-text"></div>
+      <div class="actions">
+        <button id="btn-narrate" class="btn ghost" type="button" hidden>🔊 Escuchar a la cafetera</button>
+        <button id="btn-start" class="btn primary" type="button">☕ Cruzar el vapor</button>
+      </div>
+      <p class="hint">Tú eres su <strong>Sangre Mambisa</strong>: su intuición. Responde con las teclas 1–4 o tocando la opción.</p>
+    </section>
+
+    <!-- TURNO -->
+    <section id="screen-turn" class="card screen" hidden>
+      <p class="row-label">📍 <span>Dimensión de la Memoria:</span> <strong id="place"></strong></p>
+      <p class="level"><span id="level-badge" class="badge"></span> <span id="progress" class="progress-text"></span></p>
+      <div class="progress-bar" aria-hidden="true"><div id="progress-fill"></div></div>
+
+      <h2 class="section-h">🎬 El Viaje de Tito</h2>
+      <div id="story" class="story"></div>
+
+      <h2 class="section-h">🧩 El Reto del Guardián</h2>
+      <p id="guardian" class="guardian"></p>
+      <p id="question" class="question"></p>
+      <div id="options" class="options" role="group" aria-label="Opciones de respuesta"></div>
+      <p id="credit" class="credit" hidden></p>
+
+      <div id="outcome" class="outcome" aria-live="polite" hidden></div>
+      <div class="actions">
+        <button id="btn-next" class="btn primary" type="button" hidden>🌀 Cruzar el siguiente portal</button>
+      </div>
+
+      <p class="inventory-line">🎒 <strong>Inventario:</strong> Fichas de Dominó: <span id="inv-lives">5/5</span> | Recuerdos Recuperados: <span id="inv-memories">0</span></p>
+    </section>
+
+    <!-- FINAL -->
+    <section id="screen-end" class="card screen" hidden>
+      <h1 id="end-title" class="title small"></h1>
+      <div id="end-text" class="intro-text"></div>
+      <p id="end-stats" class="end-stats"></p>
+      <div class="actions">
+        <button id="btn-share" class="btn ghost" type="button">📋 Copiar resultado</button>
+        <button id="btn-restart" class="btn primary" type="button">☕ Volver a colar café</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="credits">Preguntas: base del Cubanómetro · Hecho con nostalgia y café 🇨🇺</footer>
+
+  <script src="js/questions.js"></script>
+  <script src="js/narrative.js"></script>
+  <script src="js/assets-manifest.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
